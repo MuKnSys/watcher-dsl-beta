@@ -1,6 +1,7 @@
-module NodeRunner where 
+module Dsl.NodeRunner where 
 import Data.Aeson
-import System.Process 
+import System.Process
+import Prelude
 
 
 jsonDir :: String

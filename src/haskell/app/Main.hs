@@ -1,4 +1,5 @@
-module Main where
+module Main (main) where
 
-main :: IO ()
-main = putStrLn "Hello, Haskell!"
+import qualified Dsl.Main
+
+main = Dsl.Main.main
