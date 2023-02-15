@@ -39,7 +39,7 @@ loadFileMock = do
   (jsonFile :: String ) <- readFile jsonDirr
   let containsClassDeclaration = T.isInfixOf (T.pack "ClassDeclaration") (T.pack  jsonFile)
   case containsClassDeclaration of
-    True -> putStrLn $  "File includes not implemented syntax"
+    True -> error  "Class declaration not allowed"
     False -> do
       renderWatcher
       putStrLn $ "Render File Created"
@@ -50,4 +50,4 @@ loadFileMock = do
 -- renderWatcher watcher path
 renderWatcher = do
   writeFile watcherPath "TODO"
-  putStrLn $ "Done"
+  return ()
