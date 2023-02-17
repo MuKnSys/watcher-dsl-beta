@@ -12,7 +12,7 @@ main = do
     (fileName : _ ) -> do 
       putStrLn $ "Parsing " ++ show fileName
       N.startNode fileName
-      file <- P.loadFileMock
+      file <- P.parse
       putStrLn ""
   -- case file of
   --   Left err -> putStrLn $ show err
