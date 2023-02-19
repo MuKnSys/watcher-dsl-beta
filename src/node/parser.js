@@ -1,10 +1,10 @@
-const { parse, ParserOptions } = require('@typescript-eslint/parser');
+const { parse } = require('@typescript-eslint/parser');
 const fs = require('fs');
 const path = require('path');
 const inputfile = process.argv[2];
 
 
-const filePath = path.join(__dirname, inputfile);
+const filePath = path.join(__dirname,'..','..', 'data/examples', inputfile);
 const code = fs.readFileSync(filePath, 'utf-8');
 
 const parserOptions = {

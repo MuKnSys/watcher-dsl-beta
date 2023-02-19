@@ -17,4 +17,24 @@
 function greet(name: string): string {
   return `Hello, ${name}!`;
 }
+
+
+function greet2(name: string): string {
+  return `Hello, ${name}!`;
+}
+
+// interface Friend {
+//   name: string;
+//   favoriteColor?: string;
+// }
+// function add(friend: Friend) {
+//   var name = friend.name;
+// }
+// add({ name: "Fred" });  // Ok
+function add(a: number, b: number): number {
+  return (a * b) + 2;
+}
+
 console.log(greet("Example for parsing"));
+
+
