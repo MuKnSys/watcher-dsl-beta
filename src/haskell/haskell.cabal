@@ -31,7 +31,7 @@ library
        Dsl.Main
      , Dsl.NodeRunner
      , Dsl.ParseNode
-     
+     , Dsl.ParserDefinition
      
 executable haskell
     import: shared-opts
