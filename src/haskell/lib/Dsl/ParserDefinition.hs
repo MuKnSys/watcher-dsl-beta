@@ -8,12 +8,15 @@ import qualified Data.Aeson.Types  as AT
 import qualified Data.Text as T
 import GHC.Generics
 
+import Control.Applicative
+
+
 data CompileError = CompileError String deriving Show 
 data CompiledWatcher = CompiledWatcher String  deriving Show 
 
 data Watcher = Watcher
   { pType :: String
-  , pBody :: [Body]
+  , pBody :: Maybe [Body]
   } deriving (Generic, Show)
 
 data Body
@@ -36,6 +39,7 @@ data Body
     }
   deriving (Show)
 
+data NoValue = NoValue
 data Id = Id
   { idType :: String
   , idName :: String
@@ -71,7 +75,7 @@ data Expression
     }
   | Literal
     { lType :: String
-    , lValue :: String
+    , lValue :: Either Bool Int
     , lRaw :: Either String Int -- TODO Fix this 
     , lRange :: [Int]
     }
@@ -88,9 +92,16 @@ data Expression
     , beRange :: [Int]
     }  deriving (Generic, Show)
 
+-- data Value
+--   = Object AT.Object
+--   | Array AT.Array
+--   | String T.Text
+--   | Number Scientific
+--   | Bool Bool
+--   | Null
+--   deriving (Generic, Show)
+ 
 
-data Mock = String | Int deriving (Generic, Show)
-instance AT.FromJSON Mock
 
 
 data VariableDeclarator = VariableDeclarator
@@ -161,13 +172,13 @@ data TSTypeAnnotation = TSTypeAnnotation
 
 -- data TypeAnnotation = TSStringKeyword | TSNumberKeyword deriving (Generic, Show)
 
-
-
 -- Instances
 instance AT.FromJSON Watcher where
   parseJSON = AT.withObject "Program" $ \v ->
     Watcher <$> v A..: "type"
             <*> v A..: "body"
+    
+
 
 instance AT.FromJSON Body where
   parseJSON (AT.Object v) = do
@@ -187,8 +198,11 @@ instance AT.FromJSON Body where
                                 <*> v A..: "returnType"
       "ExpressionStatement" ->  ExpressionStatement
                                 <$> v A..: "expression"
-      "ClassDeclaration" -> fail "class declaration not allowed" -- TODO refactor to not stop evaluation 
+      "ClassDeclaration" -> empty 
+      --"ClassDeclaration" -> fail "class declaration not allowed" -- TODO refactor to not stop evaluation 
       _ -> fail $ T.unpack $ bodyType
+
+
 
 
 instance AT.FromJSON VariableDeclarator where
@@ -196,12 +210,13 @@ instance AT.FromJSON VariableDeclarator where
     <$> v A..: "type"
     <*> v A..: "id"
     <*> v A..: "init"
+  parseJSON _ = fail "Invalid Variable Declarator"
 
 instance AT.FromJSON ObjectExpression where
   parseJSON (AT.Object v) = ObjectExpression
     <$> v A..: "type"
     <*> v A..: "properties"
-  parseJSON _ = fail "Invalid ObjectExpression"
+  parseJSON _ = fail "Invalid Object Expression"
 
 
 instance AT.FromJSON Id where
@@ -209,6 +224,7 @@ instance AT.FromJSON Id where
       <$> v A..: "type"
       <*> v A..: "name"
       <*> v A..: "range"
+  parseJSON _ = fail "Invalid Id"
 
 instance AT.FromJSON Param where
   parseJSON (AT.Object v) = Param <$>
@@ -216,18 +232,21 @@ instance AT.FromJSON Param where
       v A..: "type" <*>
       v A..: "name" <*>
       v A..: "range"
- 
+  parseJSON _ = fail "Invalid Parameter"
+
 instance AT.FromJSON BlockStatement where
   parseJSON (AT.Object v) = BlockStatement <$>
       v A..: "type" <*>
       v A..: "body" <*>
       v A..: "range"
+  parseJSON _ = fail "Invalid Block Statement"
 
 instance AT.FromJSON Statement where
   parseJSON (AT.Object v) = ReturnStatement <$>
       v A..: "type" <*>
       v A..: "argument" <*>
       v A..: "range"
+  parseJSON _ = fail "Invalid Return Statement"
 
 instance AT.FromJSON Property where
   parseJSON (AT.Object v) = Property
@@ -239,7 +258,8 @@ instance AT.FromJSON Property where
     <*> v A..: "shorthand"
     <*> v A..: "kind"
     <*> v A..: "range"
-
+  parseJSON _ = fail "Invalid Property"
+  
 instance AT.FromJSON Expression where
   parseJSON (AT.Object v) = do
     exprType <- v A..: "type" :: AT.Parser T.Text
@@ -262,8 +282,8 @@ instance AT.FromJSON Expression where
                            v A..: "range"
       "Literal" -> Literal <$>
                     v A..: "type" <*>
-                    v A..: "value" <*>
-                    v A..: "raw" <*>
+                    (Right <$> v A..: "value" <|> Left <$> v A..: "value") <*>
+                    (Right <$> v A..: "raw" <|> Left <$> v A..: "raw") <*>
                     v A..: "range"
       _ -> fail $ T.unpack $ exprType
 
@@ -272,7 +292,8 @@ instance AT.FromJSON TemplateElement where
                             <$> v A..: "type"
                             <*> v A..: "value"
                             <*> v A..:? "tail"
-                            <*> v A..: "range" 
+                            <*> v A..: "range"
+  parseJSON _ = fail "Invalid Template Element"
 
 instance AT.FromJSON ELExpression where
   parseJSON (AT.Object v) = ELExpression
@@ -280,12 +301,14 @@ instance AT.FromJSON ELExpression where
                             <*> v A..:? "value"
                             <*> v A..:? "name"
                             <*> v A..: "range"
+  parseJSON _ = fail "Invalid Element Expression"
 
 
 instance AT.FromJSON ElValue where
   parseJSON (AT.Object v) = ElValue
                             <$> v A..: "raw"
                             <*> v A..: "cooked"
+  parseJSON _ = fail "Element Value"
 
 
 instance AT.FromJSON MemberExpression where
@@ -298,6 +321,7 @@ instance AT.FromJSON MemberExpression where
       v A..:? "type" <*>
       v A..:? "name" <*>
       v A..: "range"
+  parseJSON _ = fail "Invalid Member Expression"
 
 instance AT.FromJSON Identifier where
   parseJSON (AT.Object v) =
@@ -305,7 +329,8 @@ instance AT.FromJSON Identifier where
       v A..: "type" <*>
       v A..: "name" <*>
       v A..: "range" <*>
-      v A..:? "TypeAnnotation" 
+      v A..:? "TypeAnnotation"
+  parseJSON _ = fail "Invalid Identifier"
 
 instance AT.FromJSON TSTypeAnnotation where
   parseJSON (AT.Object v) =
@@ -313,6 +338,7 @@ instance AT.FromJSON TSTypeAnnotation where
       v A..: "type" <*>
       v A..: "range" <*>
       v A..: "typeAnnotation"
+  parseJSON _ = fail "Invalid Type Annotation"
 
 data TypeAnnotation
   = TSTypeAnnotationAnnotation TSTypeAnnotation
@@ -340,3 +366,6 @@ instance AT.FromJSON TypeAnnotation where
                               
       _ -> fail $ "Invalid type annotation: " ++ annotationType
 
+
+options :: AT.Options
+options = AT.defaultOptions { AT.omitNothingFields = True }

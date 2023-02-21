@@ -52,12 +52,10 @@ parse :: IO()
 parse = do
   (jsonFile :: String) <- readFile jsonDirr
   putStrLn $ jsonFile 
-  let maybeProgram = A.eitherDecode (BS.fromStrict $ BS.pack jsonFile) :: Either String Watcher
-  case maybeProgram of
+  let maybeWatcher = A.eitherDecode (BS.fromStrict $ BS.pack jsonFile) :: Either String Watcher
+  case maybeWatcher of
     Left err -> putStrLn err
-    Right program -> print program
-
-
+    Right watcher -> print watcher
 
 
 --renderWatcher :: CompileState -> FilePath -> IO ()
