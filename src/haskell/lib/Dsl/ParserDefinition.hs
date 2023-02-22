@@ -6,6 +6,8 @@ import qualified Data.Aeson as A
 import qualified Data.ByteString.Char8 as BS
 import qualified Data.Aeson.Types  as AT
 import qualified Data.Text as T
+
+
 import GHC.Generics
 
 import Control.Applicative
@@ -37,9 +39,28 @@ data Body
     { vdType :: String
     , vdDeclarations :: [VariableDeclarator]
     }
+  | EnumDeclaration
+    { edType :: String
+    , edId :: Id
+    , edMembers :: [EnumMember]
+    , edRange :: [Int]
+    }
   deriving (Show)
 
-data NoValue = NoValue
+data EnumMember = EnumMember
+  { emType :: String
+  , emId :: Id
+  , emRange :: [Int]
+  , emInitializer :: Maybe EnumInitializer 
+  } deriving (Show)
+
+data EnumInitializer = EnumInitializer
+  { eiType :: String
+  , eiValue :: PTypes
+  , eiRaw :: PTypes
+  , eiRange :: [Int]
+  } deriving (Show)
+
 data Id = Id
   { idType :: String
   , idName :: String
@@ -64,8 +85,39 @@ data Statement
     { rType :: String
     , rArgument :: Expression
     , rRange :: [Int]
-    } deriving (Generic, Show)
+    }
+  | IfStatement
+    { ifType :: String
+    , ifTest :: Test
+    , ifConsequent :: BlockStatement
+    , ifAlternate ::BlockStatement
+    , ifRange :: [Int]
+    }deriving (Generic, Show)
 
+data Test
+  = Test
+  { tType :: String
+  , tOperator :: String
+  , tLeft :: ELExpression
+  , tRight :: ELExpression
+  , tRange :: [Int]
+  } deriving (Generic, Show)
+
+data PTypes
+  = PString String
+  | PNumber Int
+  | PBool Bool
+  | PSymbol String
+  | PVoid
+  | PNull
+  deriving (Show, Generic)
+
+instance AT.FromJSON PTypes where
+  parseJSON (AT.String s) = return (PString (T.unpack s))
+  parseJSON (AT.Number n) = return (PNumber (truncate n))
+  parseJSON (AT.Bool b)   = return (PBool b)
+  parseJSON _             = fail "Invalid pTypes"
+  
 data Expression
   = CallExpression
     { ceCallee :: MemberExpression
@@ -75,8 +127,8 @@ data Expression
     }
   | Literal
     { lType :: String
-    , lValue :: Either Bool Int
-    , lRaw :: Either String Int -- TODO Fix this 
+    , lValue :: PTypes
+    , lRaw :: PTypes 
     , lRange :: [Int]
     }
   | TemplateLiteral
@@ -90,7 +142,16 @@ data Expression
     , beLeft :: ELExpression
     , beRight :: ELExpression
     , beRange :: [Int]
-    }  deriving (Generic, Show)
+    }
+  | ArrayExpression
+    { arElements :: [ELExpression]
+    , arRange :: [Int]
+    }
+  | ObjectExpression
+    { obProperties :: [Property]
+    , obRange :: [Int]
+    }
+  deriving (Generic, Show)
 
 -- data Value
 --   = Object AT.Object
@@ -107,10 +168,10 @@ data Expression
 data VariableDeclarator = VariableDeclarator
   { vdrType :: String
   , vdrId :: Identifier
-  , vdrInit :: ObjectExpression
+  , vdrInit :: DecObjectExpression
   } deriving (Show)
 
-data ObjectExpression = ObjectExpression
+data DecObjectExpression = DecObjectExpression
   { oeType :: String
   , oeProperties :: [Property]
   } deriving (Generic, Show)
@@ -142,8 +203,9 @@ data ElValue = ElValue
 
 data ELExpression = ELExpression
   { elType :: String
-  , elValue :: Maybe Int
-  , elName :: Maybe String
+  , elValue :: Maybe PTypes
+  , elName :: Maybe PTypes
+  , eleRaw :: Maybe PTypes
   , elRange :: [Int]
   }  deriving (Generic, Show)
 
@@ -178,12 +240,31 @@ instance AT.FromJSON Watcher where
     Watcher <$> v A..: "type"
             <*> v A..: "body"
     
+instance AT.FromJSON EnumMember where
+  parseJSON (AT.Object v) = EnumMember
+    <$> v A..: "type"
+    <*> v A..: "id"
+    <*> v A..: "range"
+    <*> v A..:? "initializer"
+  parseJSON _ = fail "Invalid Enum Member"
 
+instance AT.FromJSON EnumInitializer where
+  parseJSON (AT.Object v) = EnumInitializer 
+    <$> v A..: "type"
+    <*> v A..: "value"
+    <*> v A..: "raw"
+    <*> v A..: "range"
+  parseJSON _ = fail "Invalid Enum Initializer"
 
 instance AT.FromJSON Body where
   parseJSON (AT.Object v) = do
     bodyType <- v A..: "type" :: AT.Parser T.Text 
     case bodyType of
+      "TSEnumDeclaration" -> EnumDeclaration
+                             <$> v A..: "type"
+                             <*> v A..: "id"
+                             <*> v A..: "members"
+                             <*> v A..: "range"
       "VariableDeclaration" ->  VariableDeclaration
                                 <$> v A..: "type"
                                 <*> v A..: "declarations"
@@ -198,8 +279,8 @@ instance AT.FromJSON Body where
                                 <*> v A..: "returnType"
       "ExpressionStatement" ->  ExpressionStatement
                                 <$> v A..: "expression"
-      "ClassDeclaration" -> empty 
-      --"ClassDeclaration" -> fail "class declaration not allowed" -- TODO refactor to not stop evaluation 
+      -- "ClassDeclaration" -> empty 
+      "ClassDeclaration" -> fail "class declaration not allowed" -- TODO refactor to not stop evaluation 
       _ -> fail $ T.unpack $ bodyType
 
 
@@ -212,8 +293,8 @@ instance AT.FromJSON VariableDeclarator where
     <*> v A..: "init"
   parseJSON _ = fail "Invalid Variable Declarator"
 
-instance AT.FromJSON ObjectExpression where
-  parseJSON (AT.Object v) = ObjectExpression
+instance AT.FromJSON DecObjectExpression where
+  parseJSON (AT.Object v) = DecObjectExpression
     <$> v A..: "type"
     <*> v A..: "properties"
   parseJSON _ = fail "Invalid Object Expression"
@@ -264,13 +345,18 @@ instance AT.FromJSON Expression where
   parseJSON (AT.Object v) = do
     exprType <- v A..: "type" :: AT.Parser T.Text
     case exprType of
+      "ObjectExpression" -> ObjectExpression <$>
+                            v A..: "properties" <*>
+                            v A..: "range"
+      "ArrayExpression" -> ArrayExpression <$>
+                            v A..: "elements" <*>
+                            v A..: "range"
       "BinaryExpression" -> BinaryExpression <$>
                              v A..: "type"  <*>
                              v A..: "operator" <*>
                              v A..: "left" <*>
                              v A..: "right" <*>
                              v A..: "range"
-
       "TemplateLiteral" -> TemplateLiteral <$>
                             v A..: "quasis" <*>
                             v A..: "expressions" <*>
@@ -282,8 +368,8 @@ instance AT.FromJSON Expression where
                            v A..: "range"
       "Literal" -> Literal <$>
                     v A..: "type" <*>
-                    (Right <$> v A..: "value" <|> Left <$> v A..: "value") <*>
-                    (Right <$> v A..: "raw" <|> Left <$> v A..: "raw") <*>
+                    v A..: "value" <*>
+                    v A..: "raw" <*>
                     v A..: "range"
       _ -> fail $ T.unpack $ exprType
 
@@ -299,6 +385,7 @@ instance AT.FromJSON ELExpression where
   parseJSON (AT.Object v) = ELExpression
                             <$> v A..: "type"
                             <*> v A..:? "value"
+                            <*> v A..:? "raw"
                             <*> v A..:? "name"
                             <*> v A..: "range"
   parseJSON _ = fail "Invalid Element Expression"

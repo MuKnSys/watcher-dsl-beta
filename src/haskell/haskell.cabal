@@ -20,7 +20,10 @@ common shared-opts
       base >=4.14 && <5,
       bytestring >=0.10.2 && <0.12,
       process >= 1.6.16.0,
-      text >= 1.2.5.0
+      text >= 1.2.5.0,
+      terminfo >=0.3.2,
+      pretty-terminal >= 0.1.0.0
+
 
 extra-source-files: CHANGELOG.md
 
@@ -36,11 +39,13 @@ library
 executable haskell
     import: shared-opts
     build-depends:    aeson ^>=2.0.3,
-                      haskell,
                       base >=4.14 && <5,
                       bytestring >=0.10.2 && <0.12,
+                      haskell,
                       process >= 1.6.16.0,
                       text >= 1.2.5.0,
+                      terminfo >=0.3.2,
+                      pretty-terminal >= 0.1.0.0
     hs-source-dirs:   app
     main-is:          Main.hs
     default-language: Haskell2010

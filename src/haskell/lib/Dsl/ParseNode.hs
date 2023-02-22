@@ -14,6 +14,9 @@ import qualified Data.Aeson as A
 import qualified Data.ByteString.Char8 as BS
 import qualified Data.Aeson.Types  as AT
 import qualified Data.Text as T
+
+
+import System.Console.Pretty (Color (..), Style (..), bgColor, color, style, supportsPretty)
 import Dsl.ParserDefinition
 import GHC.Generics
 
@@ -53,9 +56,17 @@ parse = do
   (jsonFile :: String) <- readFile jsonDirr
   putStrLn $ jsonFile 
   let maybeWatcher = A.eitherDecode (BS.fromStrict $ BS.pack jsonFile) :: Either String Watcher
+  let styleFailMessage = color Red . style Bold
+  let styleFailInfo = color Red
+  let styleOK = color Green . style Bold
+  let styleOKInfo = color Green
   case maybeWatcher of
-    Left err -> putStrLn err
-    Right watcher -> print watcher
+    Left err -> do
+      putStrLn (styleFailMessage "Watcher syntactic rule violated: ")
+      putStrLn (styleFailInfo err)
+    Right watcher -> do
+      putStrLn (styleOKInfo (show $ watcher))
+      putStrLn (styleOK "Watcher code parsed without errors")
 
 
 --renderWatcher :: CompileState -> FilePath -> IO ()
