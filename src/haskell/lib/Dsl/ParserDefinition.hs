@@ -23,11 +23,11 @@ data Watcher = Watcher
 
 data Body
   = FunctionDeclaration
-    { fType        :: String
+    { fType        :: PTypes
     , fId          :: Id
-    , fGenerator   :: Bool
-    , fExpression  :: Bool
-    , fAsync       :: Bool
+    , fGenerator   :: PTypes
+    , fExpression  :: PTypes
+    , fAsync       :: PTypes
     , fParams      :: [Param]
     , fBody        :: BlockStatement
     , fReturnType  :: TSTypeAnnotation
@@ -36,71 +36,71 @@ data Body
     { eExpression :: Expression
     }
   | VariableDeclaration
-    { vdType :: String
+    { vdType :: PTypes
     , vdDeclarations :: [VariableDeclarator]
     }
   | EnumDeclaration
-    { edType :: String
+    { edType :: PTypes
     , edId :: Id
     , edMembers :: [EnumMember]
-    , edRange :: [Int]
+    , edRange :: [PTypes]
     }
   deriving (Show)
 
 data EnumMember = EnumMember
-  { emType :: String
+  { emType :: PTypes
   , emId :: Id
-  , emRange :: [Int]
+  , emRange :: [PTypes]
   , emInitializer :: Maybe EnumInitializer 
   } deriving (Show)
 
 data EnumInitializer = EnumInitializer
-  { eiType :: String
+  { eiType :: PTypes
   , eiValue :: PTypes
   , eiRaw :: PTypes
-  , eiRange :: [Int]
+  , eiRange :: [PTypes]
   } deriving (Show)
 
 data Id = Id
-  { idType :: String
-  , idName :: String
-  , idRange :: [Int]
+  { idType :: PTypes
+  , idName :: PTypes
+  , idRange :: [PTypes]
   } deriving (Generic, Show)
 
 data Param = Param
   { paramTypeAnnotation :: TSTypeAnnotation
-  , paramType :: String
-  , paramName :: String
-  , paramRange :: [Int]
+  , paramType :: PTypes
+  , paramName :: PTypes
+  , paramRange :: [PTypes]
   } deriving (Generic, Show)
 
 data BlockStatement = BlockStatement
-  { bsType :: String
+  { bsType :: PTypes
   , bsBody :: [Statement]
-  , bsRange :: [Int]
+  , bsRange :: [PTypes]
   } deriving (Generic, Show)
 
 data Statement
   = ReturnStatement
-    { rType :: String
+    { rType :: PTypes
     , rArgument :: Expression
-    , rRange :: [Int]
+    , rRange :: [PTypes]
     }
   | IfStatement
-    { ifType :: String
+    { ifType :: PTypes
     , ifTest :: Test
     , ifConsequent :: BlockStatement
     , ifAlternate ::BlockStatement
-    , ifRange :: [Int]
+    , ifRange :: [PTypes]
     }deriving (Generic, Show)
 
 data Test
   = Test
-  { tType :: String
-  , tOperator :: String
+  { tType :: PTypes
+  , tOperator :: PTypes
   , tLeft :: ELExpression
   , tRight :: ELExpression
-  , tRange :: [Int]
+  , tRange :: [PTypes]
   } deriving (Generic, Show)
 
 data PTypes
@@ -112,129 +112,120 @@ data PTypes
   | PNull
   deriving (Show, Generic)
 
-instance AT.FromJSON PTypes where
-  parseJSON (AT.String s) = return (PString (T.unpack s))
-  parseJSON (AT.Number n) = return (PNumber (truncate n))
-  parseJSON (AT.Bool b)   = return (PBool b)
-  parseJSON _             = fail "Invalid pTypes"
-  
 data Expression
   = CallExpression
-    { ceCallee :: MemberExpression
-    , ceArguments :: [Expression]
-    , ceOptional :: Bool
-    , ceRange :: [Int]
+    { ceCallee :: Expression
+    , ceArguments :: Maybe [Expression]
+    , ceOptional :: PTypes
+    , ceRange :: [PTypes]
     }
   | Literal
-    { lType :: String
+    { lType :: PTypes
     , lValue :: PTypes
     , lRaw :: PTypes 
-    , lRange :: [Int]
+    , lRange :: [PTypes]
     }
   | TemplateLiteral
     { lQuasis :: [TemplateElement]
     , lExpressions :: [ELExpression]
-    , lRange :: [Int]
+    , lRange :: [PTypes]
     }
   | BinaryExpression
-    { beType :: String
-    , beOperator :: String
+    { beType :: PTypes
+    , beOperator :: PTypes
     , beLeft :: ELExpression
     , beRight :: ELExpression
-    , beRange :: [Int]
+    , beRange :: [PTypes]
     }
   | ArrayExpression
     { arElements :: [ELExpression]
-    , arRange :: [Int]
+    , arRange :: [PTypes]
     }
   | ObjectExpression
     { obProperties :: [Property]
-    , obRange :: [Int]
+    , obRange :: [PTypes]
+    }
+  | MemberExpression
+    { meObject :: Maybe Expression
+    , meProperty :: Maybe Expression
+    , meComputed :: Maybe PTypes
+    , meOptional :: Maybe PTypes
+    , meType :: Maybe PTypes
+    , meName :: Maybe PTypes
+    , meRange :: [PTypes]
+    }
+  | DecObjectExpression
+    { oeType :: PTypes
+    , oeProperties :: [Property]
+    }
+  | Identifier
+    { iType :: PTypes
+    , iName :: PTypes
+    , iRange :: [PTypes]
+    , idTypeAnnotation :: Maybe TSTypeAnnotation
     }
   deriving (Generic, Show)
 
--- data Value
---   = Object AT.Object
---   | Array AT.Array
---   | String T.Text
---   | Number Scientific
---   | Bool Bool
---   | Null
---   deriving (Generic, Show)
- 
-
-
-
 data VariableDeclarator = VariableDeclarator
-  { vdrType :: String
-  , vdrId :: Identifier
-  , vdrInit :: DecObjectExpression
+  { vdrType :: PTypes
+  , vdrId :: Expression
+  , vdrInit :: Expression
+  , vdrRange :: [PTypes]
   } deriving (Show)
 
-data DecObjectExpression = DecObjectExpression
-  { oeType :: String
-  , oeProperties :: [Property]
-  } deriving (Generic, Show)
+
 
 data Property = Property
-  { opType :: String
-  , opKey :: Identifier
+  { opType :: PTypes
+  , opKey :: Expression
   , opValue :: Expression
-  , opComputed :: Bool
-  , opMethod :: Bool
-  , opShorthand :: Bool
-  , opKind :: String
-  , opRange :: [Int]
+  , opComputed :: PTypes
+  , opMethod :: PTypes
+  , opShorthand :: PTypes
+  , opKind :: PTypes
+  , opRange :: [PTypes]
   } deriving (Generic, Show)
 
 
 
 data TemplateElement = TemplateElement
-  { teType :: String
+  { teType :: PTypes
   , teValue :: ElValue
-  , teTail :: Maybe Bool
-  , teRange :: [Int]
+  , teTail :: Maybe PTypes
+  , teRange :: [PTypes]
   } deriving (Generic, Show)
 
 data ElValue = ElValue
-  { elRaw :: String
-  , elCooked :: String
+  { elRaw :: PTypes
+  , elCooked :: PTypes
   } deriving (Generic, Show)
 
 data ELExpression = ELExpression
-  { elType :: String
+  { elType :: PTypes
   , elValue :: Maybe PTypes
   , elName :: Maybe PTypes
   , eleRaw :: Maybe PTypes
-  , elRange :: [Int]
+  , elRange :: [PTypes]
   }  deriving (Generic, Show)
 
-data MemberExpression = MemberExpression
-  { meObject :: Maybe Identifier
-  , meProperty :: Maybe Identifier
-  , meComputed :: Maybe Bool
-  , meOptional :: Maybe Bool
-  , meType :: Maybe String
-  , meName :: Maybe String
-  , meRange :: [Int]
-  } deriving (Generic, Show)
 
-data Identifier = Identifier
-  { iType :: String
-  , iName :: String
-  , iRange :: [Int]
-  , idTypeAnnotation :: Maybe TSTypeAnnotation
-  } deriving (Generic, Show)
 
 data TSTypeAnnotation = TSTypeAnnotation
-  { tsType :: String
-  , tsRange :: [Int]
+  { tsType :: PTypes
+  , tsRange :: [PTypes]
   , tsTypeAnnotation :: TypeAnnotation
   } deriving (Generic, Show)
 
 -- data TypeAnnotation = TSStringKeyword | TSNumberKeyword deriving (Generic, Show)
 
 -- Instances
+
+instance AT.FromJSON PTypes where
+  parseJSON (AT.String s) = return (PString (T.unpack s))
+  parseJSON (AT.Number n) = return (PNumber (truncate n))
+  parseJSON (AT.Bool b)   = return (PBool b)
+  parseJSON _             = fail "Invalid pTypes"
+  
 instance AT.FromJSON Watcher where
   parseJSON = AT.withObject "Program" $ \v ->
     Watcher <$> v A..: "type"
@@ -279,66 +270,80 @@ instance AT.FromJSON Body where
                                 <*> v A..: "returnType"
       "ExpressionStatement" ->  ExpressionStatement
                                 <$> v A..: "expression"
-      -- "ClassDeclaration" -> empty 
-      "ClassDeclaration" -> fail "class declaration not allowed" -- TODO refactor to not stop evaluation 
+      "ClassDeclaration" -> fail "class declaration not allowed" 
       _ -> fail $ T.unpack $ bodyType
 
 
-
+instance AT.FromJSON Test where
+  parseJSON (AT.Object v) = Test <$>
+                            v A..: "type" <*>
+                            v A..: "operator" <*>
+                            v A..: "left" <*>
+                            v A..: "right" <*>
+                            v A..: "range"
+  parseJSON _ = fail "Invalid Test Type"
 
 instance AT.FromJSON VariableDeclarator where
   parseJSON (AT.Object v) = VariableDeclarator
-    <$> v A..: "type"
-    <*> v A..: "id"
-    <*> v A..: "init"
+                            <$> v A..: "type"
+                            <*> v A..: "id"
+                            <*> v A..: "init"
+                            <*> v A..: "range"
   parseJSON _ = fail "Invalid Variable Declarator"
 
-instance AT.FromJSON DecObjectExpression where
-  parseJSON (AT.Object v) = DecObjectExpression
-    <$> v A..: "type"
-    <*> v A..: "properties"
-  parseJSON _ = fail "Invalid Object Expression"
 
 
 instance AT.FromJSON Id where
   parseJSON (AT.Object v) = Id
-      <$> v A..: "type"
-      <*> v A..: "name"
-      <*> v A..: "range"
+                            <$> v A..: "type"
+                            <*> v A..: "name"
+                            <*> v A..: "range"
   parseJSON _ = fail "Invalid Id"
 
 instance AT.FromJSON Param where
   parseJSON (AT.Object v) = Param <$>
-      v A..: "typeAnnotation" <*>
-      v A..: "type" <*>
-      v A..: "name" <*>
-      v A..: "range"
+                            v A..: "typeAnnotation" <*>
+                            v A..: "type" <*>
+                            v A..: "name" <*>
+                            v A..: "range"
   parseJSON _ = fail "Invalid Parameter"
 
 instance AT.FromJSON BlockStatement where
   parseJSON (AT.Object v) = BlockStatement <$>
-      v A..: "type" <*>
-      v A..: "body" <*>
-      v A..: "range"
+                            v A..: "type" <*>
+                            v A..: "body" <*>
+                            v A..: "range"
   parseJSON _ = fail "Invalid Block Statement"
 
 instance AT.FromJSON Statement where
-  parseJSON (AT.Object v) = ReturnStatement <$>
-      v A..: "type" <*>
-      v A..: "argument" <*>
-      v A..: "range"
-  parseJSON _ = fail "Invalid Return Statement"
+  parseJSON (AT.Object v) = do
+    stmtType <- v A..: "type" :: AT.Parser T.Text
+    case stmtType of
+      "ReturnStatement" -> ReturnStatement <$>
+                           v A..: "type" <*>
+                           v A..: "argument" <*>
+                           v A..: "range"
 
+      "IfStatement" -> IfStatement <$>
+                       v A..: "type" <*>
+                       v A..: "test" <*>
+                       v A..: "consequent" <*>
+                       v A..: "alternate" <*>
+                       v A..: "range"
+                       
+      _ -> fail "Unknown Statement type"
+
+      
 instance AT.FromJSON Property where
   parseJSON (AT.Object v) = Property
-    <$> v A..: "type"
-    <*> v A..: "key"
-    <*> v A..: "value"
-    <*> v A..: "computed"
-    <*> v A..: "method"
-    <*> v A..: "shorthand"
-    <*> v A..: "kind"
-    <*> v A..: "range"
+                            <$> v A..: "type"
+                            <*> v A..: "key"
+                            <*> v A..: "value"
+                            <*> v A..: "computed"
+                            <*> v A..: "method"
+                            <*> v A..: "shorthand"
+                            <*> v A..: "kind"
+                            <*> v A..: "range"
   parseJSON _ = fail "Invalid Property"
   
 instance AT.FromJSON Expression where
@@ -363,7 +368,7 @@ instance AT.FromJSON Expression where
                             v A..: "range"
       "CallExpression" -> CallExpression <$>
                            v A..: "callee" <*>
-                           v A..: "arguments" <*>
+                           v A..:? "arguments" <*>
                            v A..: "optional" <*>
                            v A..: "range"
       "Literal" -> Literal <$>
@@ -371,6 +376,23 @@ instance AT.FromJSON Expression where
                     v A..: "value" <*>
                     v A..: "raw" <*>
                     v A..: "range"
+      "MemberExpression" -> MemberExpression <$>
+                            v A..:? "object" <*>
+                            v A..:? "property" <*>
+                            v A..:? "computed" <*>
+                            v A..:? "optional" <*>
+                            v A..:? "type" <*>
+                            v A..:? "name" <*>
+                            v A..: "range"
+      "DecObjectExpression" -> DecObjectExpression
+                               <$> v A..: "type"
+                               <*> v A..: "properties"
+      "Identifier" -> Identifier <$>
+                      v A..: "type" <*>
+                      v A..: "name" <*>
+                      v A..: "range" <*>
+                      v A..:? "TypeAnnotation"
+
       _ -> fail $ T.unpack $ exprType
 
 instance AT.FromJSON TemplateElement where
@@ -397,34 +419,11 @@ instance AT.FromJSON ElValue where
                             <*> v A..: "cooked"
   parseJSON _ = fail "Element Value"
 
-
-instance AT.FromJSON MemberExpression where
-  parseJSON (AT.Object v) =
-    MemberExpression <$>
-      v A..:? "object" <*>
-      v A..:? "property" <*>
-      v A..:? "computed" <*>
-      v A..:? "optional" <*>
-      v A..:? "type" <*>
-      v A..:? "name" <*>
-      v A..: "range"
-  parseJSON _ = fail "Invalid Member Expression"
-
-instance AT.FromJSON Identifier where
-  parseJSON (AT.Object v) =
-    Identifier <$>
-      v A..: "type" <*>
-      v A..: "name" <*>
-      v A..: "range" <*>
-      v A..:? "TypeAnnotation"
-  parseJSON _ = fail "Invalid Identifier"
-
 instance AT.FromJSON TSTypeAnnotation where
-  parseJSON (AT.Object v) =
-    TSTypeAnnotation <$>
-      v A..: "type" <*>
-      v A..: "range" <*>
-      v A..: "typeAnnotation"
+  parseJSON (AT.Object v) = TSTypeAnnotation <$>
+                            v A..: "type" <*>
+                            v A..: "range" <*>
+                            v A..: "typeAnnotation"
   parseJSON _ = fail "Invalid Type Annotation"
 
 data TypeAnnotation
@@ -432,6 +431,7 @@ data TypeAnnotation
   | TSStringKeywordAnnotation String
   | TSNumberKeywordAnnotation String
   | TSBooleanKeywordAnnotation String
+  | TSTypeReference String
   deriving (Generic, Show)
 
 
@@ -441,18 +441,18 @@ instance AT.FromJSON TypeAnnotation where
     case annotationType of
       "TSTypeAnnotation" -> TSTypeAnnotationAnnotation <$>
                               v A..: "typeAnnotation"
+      "TSTypeReference" -> TSTypeReference <$>
+                             v A..: "type"
       "TSStringKeyword" -> TSStringKeywordAnnotation <$>
                              v A..: "type"
       "TSNumberKeyword" -> TSNumberKeywordAnnotation <$>
                              v A..: "type"
       "TSBooleanKeyword" -> TSBooleanKeywordAnnotation <$>
                               v A..: "type"
+              
       "TSAnyKeyword"  -> error "any type not allowed"
       "TSUndefinedKeyword" -> error "undefined type not allowed"
 
                               
       _ -> fail $ "Invalid type annotation: " ++ annotationType
 
-
-options :: AT.Options
-options = AT.defaultOptions { AT.omitNothingFields = True }
