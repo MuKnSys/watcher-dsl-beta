@@ -53,13 +53,13 @@ loadFile = do
 
 parse :: IO()
 parse = do
+  let styleFailMessage = color Red . style Bold
+      styleFailInfo = color Red
+      styleOK = color Green . style Bold
+      styleOKInfo = color Green
   (jsonFile :: String) <- readFile jsonDirr
   putStrLn $ jsonFile 
   let maybeWatcher = A.eitherDecode (BS.fromStrict $ BS.pack jsonFile) :: Either String Watcher
-  let styleFailMessage = color Red . style Bold
-  let styleFailInfo = color Red
-  let styleOK = color Green . style Bold
-  let styleOKInfo = color Green
   case maybeWatcher of
     Left err -> do
       putStrLn (styleFailMessage "Watcher syntactic rule violated: ")
