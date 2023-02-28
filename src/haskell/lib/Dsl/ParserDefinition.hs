@@ -456,3 +456,227 @@ instance AT.FromJSON TypeAnnotation where
                               
       _ -> fail $ "Invalid type annotation: " ++ annotationType
 
+--TOJSON
+
+instance AT.ToJSON PTypes where
+  toJSON (PString s) = AT.String (T.pack s)
+  toJSON (PNumber n) = AT.Number (fromIntegral n)
+  toJSON (PBool b)   = AT.Bool b
+
+instance AT.ToJSON Watcher where
+  toJSON (Watcher pType pBody) =
+    AT.object [ "type" A..= pType
+              , "body" A..= pBody
+              ]
+
+instance AT.ToJSON Body where
+  toJSON (EnumDeclaration etype eid emembers erange) =
+    AT.object [ "type" A..= ("TSEnumDeclaration" :: T.Text)
+              , "id" A..= eid
+              , "members" A..= emembers
+              , "range" A..= erange
+              ]
+  toJSON (VariableDeclaration vtype vdeclarations) =
+    AT.object [ "type" A..= ("VariableDeclaration" :: T.Text)
+              , "declarations" A..= vdeclarations
+              , "type" A..= vtype
+              ]
+  toJSON (FunctionDeclaration ftype fid fgen fexp fasyn fparams fbody frettype) =
+    AT.object [ "type" A..= ("FunctionDeclaration" :: T.Text)
+              , "id" A..= fid
+              , "generator" A..= fgen
+              , "expression" A..= fexp
+              , "async" A..= fasyn
+              , "params" A..= fparams
+              , "body" A..= fbody
+              , "returnType" A..= frettype
+              , "type" A..= ftype
+              ]
+  toJSON (ExpressionStatement eexp) =
+    AT.object [ "type" A..= ("ExpressionStatement" :: T.Text)
+              , "expression" A..= eexp
+              ]
+
+
+
+instance A.ToJSON EnumMember where
+  toJSON (EnumMember eType eId eRange eInitializer) =
+    AT.object [ "type" A..= eType,
+               "id" A..= eId,
+               "range" A..= eRange,
+               "initializer" A..= eInitializer
+             ]
+
+instance AT.ToJSON EnumInitializer where
+  toJSON (EnumInitializer eiType eiValue eiRaw eiRange) =
+    AT.object [ "type" A..= eiType
+             , "value" A..= eiValue
+             , "raw" A..= eiRaw
+             , "range" A..= eiRange
+             ]
+
+instance AT.ToJSON Test where
+  toJSON (Test tType tOperator tLeft tRight tRange) = 
+    AT.object [ "type" A..= tType
+              , "operator" A..= tOperator
+              , "left" A..= tLeft
+              , "right" A..= tRight
+              , "range" A..= tRange
+              ]
+
+instance AT.ToJSON VariableDeclarator where
+  toJSON (VariableDeclarator vdType vdId vdInit vdRange) =
+    AT.object [ "type" A..= vdType
+              , "id" A..= vdId
+              , "init" A..= vdInit
+              , "range" A..= vdRange
+              ]
+
+instance AT.ToJSON Id where
+  toJSON (Id idType idName idRange) =
+    AT.object [ "type" A..= idType
+              , "name" A..= idName
+              , "range" A..= idRange
+              ]
+
+instance AT.ToJSON Param where
+  toJSON (Param typeAnnotation pType pName pRange) = 
+    AT.object [ "typeAnnotation" A..= typeAnnotation
+              , "type" A..= pType
+              , "name" A..= pName
+              , "range" A..= pRange
+              ]
+    
+instance AT.ToJSON BlockStatement where
+  toJSON (BlockStatement bsType bsBody bsRange) =
+    AT.object [ "type" A..= bsType
+              , "body" A..= bsBody
+              , "range" A..= bsRange
+              ]
+  
+
+instance AT.ToJSON Statement where
+  toJSON (ReturnStatement rsType rsArg rsRange) =
+    AT.object [ "type" A..= rsType
+              , "argument" A..= rsArg
+              , "range" A..= rsRange
+              ]
+  toJSON (IfStatement ifType ifTest ifConsequent ifAlternate ifRange) =
+    AT.object [ "type" A..= ifType
+              , "test" A..= ifTest
+              , "consequent" A..= ifConsequent
+              , "alternate" A..= ifAlternate
+              , "range" A..= ifRange
+              ]
+
+instance AT.ToJSON Property where
+  toJSON (Property propType propKey propValue propComputed propMethod propShorthand propKind propRange) =
+    AT.object [ "type" A..= propType
+              , "key" A..= propKey
+              , "value" A..= propValue
+              , "computed" A..= propComputed
+              , "method" A..= propMethod
+              , "shorthand" A..= propShorthand
+              , "kind" A..= propKind
+              , "range" A..= propRange
+              ]
+
+instance AT.ToJSON Expression where
+  toJSON (ObjectExpression oeProps oeRange) = AT.object
+    [ "type" A..= ("ObjectExpression" :: T.Text)
+    , "properties" A..= oeProps
+    , "range" A..= oeRange
+    ]
+  toJSON (ArrayExpression aeElems aeRange) = AT.object
+    [ "type" A..= ("ArrayExpression" :: T.Text)
+    , "elements" A..= aeElems
+    , "range" A..= aeRange
+    ]
+  toJSON (BinaryExpression beType beOperator beLeft beRight beRange) = AT.object
+    [ "type" A..= ( "BinaryExpression" :: T.Text)
+    , "operator" A..= beOperator
+    , "left" A..= beLeft
+    , "right" A..= beRight
+    , "range" A..= beRange
+    ]
+  toJSON (TemplateLiteral tlQuasis tlExpression tlRange) = AT.object
+    [ "type" A..= ( "TemplateLiteral" :: T.Text)
+    , "quasis" A..= tlQuasis
+    , "expressions" A..= tlExpression
+    , "range" A..= tlRange
+    ]
+  toJSON (CallExpression ceCallee ceArguments ceOptional ceRange) = AT.object
+    [ "type" A..= ( "CallExpression" :: T.Text)
+    , "callee" A..= ceCallee
+    , "arguments" A..= ceArguments
+    , "optional" A..= ceOptional
+    , "range" A..= ceRange
+    ]
+  toJSON (Literal liType  liValue liRaw liRange) = AT.object
+    [ "type" A..= ( "Literal" :: T.Text)
+    , "value" A..= liValue
+    , "raw" A..= liRaw
+    , "range" A..= liRange
+    ]
+  toJSON (MemberExpression meObject meProp meComputed meOptional meType meName meRange) = AT.object
+    [ "type" A..=( "MemberExpression" :: T.Text)
+    , "object" A..= meObject
+    , "property" A..= meProp
+    , "computed" A..= meComputed
+    , "optional" A..= meOptional
+    , "type" A..= meType
+    , "name" A..= meName
+    , "range" A..= meRange
+    ]
+  toJSON (DecObjectExpression doeType doeProps) = AT.object
+    [ "type" A..= ( "DecObjectExpression" :: T.Text)
+    , "properties" A..= doeProps
+    ]
+  toJSON (Identifier ideType ideName ideRange ideTypeAnn) = AT.object $
+    [ "type" A..=( "Identifier" :: T.Text)
+    , "name" A..= ideName
+    , "range" A..= ideRange
+    , "typeAnnotation" A..= ideTypeAnn
+    ]
+
+instance AT.ToJSON TemplateElement where
+  toJSON (TemplateElement teType teValue teTail teRange) =
+    AT.object [ "type" A..= teType
+              , "value" A..= teValue
+              , "tail" A..= teTail
+              , "range" A..= teRange
+              ]
+instance AT.ToJSON ELExpression where
+  toJSON (ELExpression eleType eleValue eleRaw eleName eleRange) =
+    AT.object [ "type" A..= eleType
+              , "value" A..= eleValue
+              , "raw" A..= eleRaw
+              , "name" A..= eleName
+              , "range" A..= eleRange
+              ]
+instance AT.ToJSON ElValue where
+  toJSON (ElValue elvRaw elvCooked) =
+    AT.object [ "raw" A..= elvRaw
+              , "cooked" A..= elvCooked
+              ]
+
+instance AT.ToJSON TSTypeAnnotation where
+  toJSON (TSTypeAnnotation tstType tstRange tstTypeAnnotation) =
+    AT.object [ "type" A..= ("TSTypeAnnotation" :: T.Text)
+              , "range" A..= tstRange
+              , "typeAnnotation" A..= tstTypeAnnotation
+              ]
+
+instance AT.ToJSON TypeAnnotation where
+  toJSON (TSTypeAnnotationAnnotation tsaTypeAnnotation) =
+    AT.object [ "type" A..= AT.String "TSTypeAnnotation"
+              , "typeAnnotation" A..= tsaTypeAnnotation
+              ]
+  toJSON (TSTypeReference tsrType) =
+    AT.object [ "type" A..= tsrType ]
+  toJSON (TSStringKeywordAnnotation tsString) =
+    AT.object [ "type" A..= AT.String "TSStringKeyword" ]
+  toJSON (TSNumberKeywordAnnotation tsNumber) =
+    AT.object [ "type" A..= AT.String "TSNumberKeyword" ]
+  toJSON (TSBooleanKeywordAnnotation tsBool) =
+    AT.object [ "type" A..= AT.String "TSBooleanKeyword" ]

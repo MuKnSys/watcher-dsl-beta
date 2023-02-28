@@ -12,8 +12,11 @@ module Dsl.ParseNode where
 import Prelude 
 import qualified Data.Aeson as A
 import qualified Data.ByteString.Char8 as BS
+import qualified Data.ByteString.Lazy.Char8 as BSS
+
 import qualified Data.Aeson.Types  as AT
 import qualified Data.Text as T
+import qualified Data.Aeson.Encode.Pretty as AP
 
 
 import System.Console.Pretty (Color (..), Style (..), bgColor, color, style, supportsPretty)
@@ -65,12 +68,25 @@ parse = do
       putStrLn (styleFailMessage "Watcher syntactic rule violated: ")
       putStrLn (styleFailInfo err)
     Right watcher -> do
-      putStrLn (styleOKInfo (show $ watcher))
+      encodeWatcher encodePath watcher
+      let encodedWatcher = AP.encodePretty watcher
+      renderWatcher (BSS.unpack encodedWatcher)
+      putStrLn (styleOKInfo (show $ (BSS.unpack encodedWatcher)))
       putStrLn (styleOK "Watcher code parsed without errors")
+
+
+  
+encodePath :: FilePath
+encodePath = "/tmp/encodedFile.json"
+
+encodeWatcher :: FilePath -> Watcher -> IO ()
+encodeWatcher path watcher = do
+  let encodedWatcher = A.encode watcher
+  BSS.writeFile path encodedWatcher
 
 
 --renderWatcher :: CompileState -> FilePath -> IO ()
 -- renderWatcher watcher path
-renderWatcher = do
-  writeFile watcherPath "TODO"
+renderWatcher code = do
+  writeFile watcherPath code
   return ()
