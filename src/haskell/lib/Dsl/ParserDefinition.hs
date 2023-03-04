@@ -14,7 +14,12 @@ import Control.Applicative
 
 
 data CompileError = CompileError String deriving Show 
-data CompiledWatcher = CompiledWatcher String  deriving Show 
+data CompiledWatcher = CompiledWatcher Watcher  deriving Show 
+
+data GeneratedWatcherCode = Directory DirName [ GeneratedWatcherCode ] | File FileName CompiledWatcher | Err String  deriving Show
+
+data DirName = DirName String  deriving Show
+data FileName = FileName String  deriving Show
 
 data Watcher = Watcher
   { pType :: String
