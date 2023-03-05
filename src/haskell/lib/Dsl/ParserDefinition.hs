@@ -18,6 +18,8 @@ data CompiledWatcher = CompiledWatcher Watcher  deriving Show
 
 data GeneratedWatcherCode = Directory DirName [ GeneratedWatcherCode ] | File FileName CompiledWatcher | Err String  deriving Show
 
+data TSast = TSDirectory DirName [ TSast ] | TSFile FileName CompiledWatcher | TSErr String  deriving Show
+
 data DirName = DirName String  deriving Show
 data FileName = FileName String  deriving Show
 

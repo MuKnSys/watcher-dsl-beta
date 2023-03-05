@@ -51,15 +51,37 @@ exampleDirr :: FilePath
 exampleDirr = "/home/pawel/Desktop/watcher-dsl-beta/data"
 
 
-parse :: IO (Either String CompiledWatcher)
-parse = do
+-- parse :: IO (Either String CompiledWatcher)
+-- parse = do
+--   let styleFailMessage = color Red . style Bold
+--       styleFailInfo = color Red
+--       styleOK = color Green . style Bold
+--       styleOKInfo = color Green
+--   (jsonFile :: String) <- readFile jsonDirr
+--   putStrLn $ jsonFile
+--   let maybeWatcher = A.eitherDecode (BS.fromStrict $ BS.pack jsonFile) :: Either String Watcher
+--   case maybeWatcher of
+--     Left err -> do
+--       putStrLn (styleFailMessage "Watcher syntactic rule violated: ")
+--       putStrLn (styleFailInfo err)
+--       return (Left err)
+--     Right watcher -> do
+--       encodeWatcher encodePath watcher
+--       let encodedWatcher = AP.encodePretty watcher
+--       renderWatcher (BSS.unpack encodedWatcher)
+--       putStrLn (styleOKInfo (show $ (BSS.unpack encodedWatcher)))
+--       putStrLn (styleOK "Watcher code parsed without errors")
+--       return (Right (CompiledWatcher watcher))
+
+
+
+parse :: String -> IO (Either String CompiledWatcher)
+parse astToParse  = do
   let styleFailMessage = color Red . style Bold
       styleFailInfo = color Red
       styleOK = color Green . style Bold
       styleOKInfo = color Green
-  (jsonFile :: String) <- readFile jsonDirr
-  putStrLn $ jsonFile
-  let maybeWatcher = A.eitherDecode (BS.fromStrict $ BS.pack jsonFile) :: Either String Watcher
+  let maybeWatcher = A.eitherDecode (BS.fromStrict $ BS.pack astToParse) :: Either String Watcher
   case maybeWatcher of
     Left err -> do
       putStrLn (styleFailMessage "Watcher syntactic rule violated: ")
@@ -73,28 +95,56 @@ parse = do
       putStrLn (styleOK "Watcher code parsed without errors")
       return (Right (CompiledWatcher watcher))
 
-testPath :: FilePath
-testPath = "/home/pawel/Desktop/watcher-dsl-beta/data/test"
 
-mapDirectory :: FilePath -> IO GeneratedWatcherCode
-mapDirectory path = do
+
+
+
+
+testPath :: FilePath
+testPath = "/home/pawel/Desktop/watcher-dsl-beta/data/copyOfDir"
+
+-- mapDirectory :: FilePath -> IO GeneratedWatcherCode
+-- mapDirectory path = do
+--   isDir <- (doesDirectoryExist path :: IO Bool)
+--   if isDir
+--     then do
+--       contents <- (listDirectory path :: IO [FilePath])
+--       subdirs <- mapM (\p -> mapDirectory (path FP.</> p)) contents
+--       let dirName = DirName (FP.takeFileName path)
+--       return (Directory dirName subdirs)
+--     else do
+--       let fileName = FileName (FP.takeFileName path)
+--       compiledWatcher <- (parse :: IO (Either String CompiledWatcher))
+--       case compiledWatcher of
+--           Left str -> return (Err "error")
+--           Right compiledWatcher -> do
+--             return (File fileName compiledWatcher)
+
+mapJsonDirectory :: FilePath -> IO TSast
+mapJsonDirectory path = do
   isDir <- (doesDirectoryExist path :: IO Bool)
+  putStrLn $ "this mapJson" ++ show path
   if isDir
     then do
       contents <- (listDirectory path :: IO [FilePath])
-      subdirs <- mapM (\p -> mapDirectory (path FP.</> p)) contents
+      subdirs <- mapM (\p -> mapJsonDirectory (path FP.</> p)) contents
+      putStrLn $ show $ subdirs
       let dirName = DirName (FP.takeFileName path)
-      return (Directory dirName subdirs)
+      putStrLn $ show $ dirName 
+      return (TSDirectory dirName subdirs)
     else do
       let fileName = FileName (FP.takeFileName path)
-      compiledWatcher <- (parse ::  IO (Either String CompiledWatcher))
+          fullPath = path
+      filcon <- readFile path
+      compiledWatcher <- parse filcon
       case compiledWatcher of
-          Left str -> return (Err "error")
+          Left str -> return (TSErr "error")
           Right compiledWatcher -> do
-            return (File fileName compiledWatcher)
+            return (TSFile fileName compiledWatcher)
 
 
 
+         
 encodePath :: FilePath
 encodePath = "/tmp/encodedFile.json"
 
@@ -110,9 +160,9 @@ renderWatcher code = do
   return ()
 
 
-renderTest :: FilePath -> IO ()
-renderTest path = do
-  code <- mapDirectory path
-  case code of
-    Err e-> putStrLn e
-    code -> writeFile "/tmp/ditMap.txt" (show code)
+-- renderTest :: FilePath -> IO ()
+-- renderTest path = do
+--   code <- mapDirectory path
+--   case code of
+--     Err e-> putStrLn e
+--     code -> writeFile "/tmp/ditMap.txt" (show code)
