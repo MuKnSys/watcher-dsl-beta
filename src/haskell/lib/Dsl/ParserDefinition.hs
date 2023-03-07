@@ -14,11 +14,14 @@ import Control.Applicative
 
 
 data CompileError = CompileError String deriving Show 
-data CompiledWatcher = CompiledWatcher Watcher  deriving Show 
+data CompiledWatcher = CompiledWatcher String  deriving Show 
 
 data GeneratedWatcherCode = Directory DirName [ GeneratedWatcherCode ] | File FileName CompiledWatcher | Err String  deriving Show
 
-data TSast = TSDirectory DirName [ TSast ] | TSFile FileName CompiledWatcher | TSErr String  deriving Show
+
+data PreCompiledWatcher = PreCompiledWatcher Watcher deriving Show
+
+data TSast = TSDirectory DirName [ TSast ] | TSFile FileName PreCompiledWatcher | TSErr String  deriving Show
 
 data DirName = DirName String  deriving Show
 data FileName = FileName String  deriving Show

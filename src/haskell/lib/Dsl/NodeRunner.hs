@@ -7,6 +7,7 @@ import Prelude
 import Control.Exception
 import System.Exit 
 import System.Console.Pretty (Color (..), Style (..), bgColor, color, style, supportsPretty)
+import qualified Data.Text as T
 
 
 jsonDir :: String
@@ -32,7 +33,7 @@ testDir = "/home/pawel/Desktop/watcher-dsl-beta/data/copyOfDir"
 startNode :: String -> IO(Either String String)
 startNode dir  = do
   putStrLn "Running node process..."
-  let com = "node ../node/parseDir.js " ++ dir
+  let com = "node ../node/parseDir.js "
   output <- try $ readCreateProcess (shell com) {cwd = Just "/home/pawel/Desktop/watcher-dsl-beta/src/node"} []
   case output of
     Left (e :: SomeException) -> do
@@ -40,7 +41,15 @@ startNode dir  = do
       return $ Left errMsg
     Right output -> do
       putStrLn $ "Ast files created"
-      putStrLn $ output
       return $ Right output
 
 
+parseTS :: String -> IO String
+parseTS content = do
+  let com = "node ../node/parseToTs.js " ++ show content
+  putStrLn $ "Code in the node process "
+  putStrLn $ content
+  code <- readCreateProcess (shell com) {cwd = Just "/home/pawel/Desktop/watcher-dsl-beta/src/node"} []
+  return code
+  
+  

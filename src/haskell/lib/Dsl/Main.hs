@@ -45,8 +45,11 @@ main = do
           putStrLn (styleFail errMsg)
           exitSuccess
         Right output -> do
-          putStrLn $ output
           let pth = output
           jsonDirr <- P.mapJsonDirectory ("/home/pawel/Desktop/watcher-dsl-beta/data/copyOfDir" :: FilePath)
+          putStrLn $ show$ jsonDirr
+          tsWatcher <- P.generateCompiledWatcher jsonDirr
+          putStrLn $ show $ tsWatcher
+          P.generateDir ("/home/pawel/Desktop/watcher-dsl-beta/data/haskellDir" :: FilePath) tsWatcher
           exitSuccess
     _ -> putStrLn "unrecognized args"
