@@ -48,6 +48,7 @@ data Body
   | VariableDeclaration
     { vdType :: PTypes
     , vdDeclarations :: [VariableDeclarator]
+    , vdKind :: PTypes
     }
   | EnumDeclaration
     { edType :: PTypes
@@ -269,6 +270,7 @@ instance AT.FromJSON Body where
       "VariableDeclaration" ->  VariableDeclaration
                                 <$> v A..: "type"
                                 <*> v A..: "declarations"
+                                <*> v A..: "kind"
       "FunctionDeclaration" ->  FunctionDeclaration
                                 <$> v A..: "type"
                                 <*> v A..: "id"
@@ -486,9 +488,10 @@ instance AT.ToJSON Body where
               , "members" A..= emembers
               , "range" A..= erange
               ]
-  toJSON (VariableDeclaration vtype vdeclarations) =
+  toJSON (VariableDeclaration vtype vdeclarations vkind) =
     AT.object [ "type" A..= ("VariableDeclaration" :: T.Text)
               , "declarations" A..= vdeclarations
+              , "kind" A..= vkind
               , "type" A..= vtype
               ]
   toJSON (FunctionDeclaration ftype fid fgen fexp fasyn fparams fbody frettype) =
