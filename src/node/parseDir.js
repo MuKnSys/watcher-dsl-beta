@@ -3,14 +3,17 @@ const fs = require('fs');
 const path = require('path');
 const parserOptions = {
     sourceType: 'module',
+    removeComments: false,
+    comment: true,
     ecmaVersion: 2020,
     include: [path.join(__dirname, 'estree.ts')],
     project: path.join(__dirname, 'tsconfig.json'),
     range : true
+
   };
   
 const inputdir = "/home/pawel/Desktop/watcher-dsl-beta/data/test"
-const outputdir = '/home/pawel/Desktop/watcher-dsl-beta/data/copyOfDir'; 
+const outputdir = '/home/pawel/Desktop/watcher-dsl-beta/data/generetedTSJSON'; 
 
 // const inputdir = process.argv[2];
 // const outputdir = process.argv[3];
@@ -51,3 +54,4 @@ try {
   console.error(`Error while processing files: ${err.message}`);
   process.exit(1);
 }
+console.log(outputdir)

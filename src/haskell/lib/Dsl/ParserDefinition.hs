@@ -29,7 +29,16 @@ data FileName = FileName String  deriving Show
 data Watcher = Watcher
   { pType :: String
   , pBody :: Maybe [Body]
+  , pComments :: [Comments]
   } deriving (Generic, Show)
+
+data Comments = Comments
+  { coType :: PTypes
+  , coValue :: PTypes
+  , coRange :: [PTypes]
+  , coLoc :: Expression
+  } deriving (Show)
+
 
 data Body
   = FunctionDeclaration
@@ -175,7 +184,21 @@ data Expression
     , iRange :: [PTypes]
     , idTypeAnnotation :: Maybe TSTypeAnnotation
     }
+  | CommentLocation
+    { comLocation :: Location
+    }
   deriving (Generic, Show)
+
+data Position = Position
+  { line :: Int
+  , column :: Int
+  } deriving (Show)
+
+data Location = Location
+  { start :: Position
+  , end :: Position
+  } deriving (Show)
+
 
 data VariableDeclarator = VariableDeclarator
   { vdrType :: PTypes
@@ -217,7 +240,7 @@ data ELExpression = ELExpression
   , elName :: Maybe PTypes
   , eleRaw :: Maybe PTypes
   , elRange :: [PTypes]
-  }  deriving (Generic, Show)
+  } deriving (Generic, Show)
 
 
 
@@ -241,6 +264,14 @@ instance AT.FromJSON Watcher where
   parseJSON = AT.withObject "Program" $ \v ->
     Watcher <$> v A..: "type"
             <*> v A..: "body"
+            <*> v A..: "comments"
+
+instance AT.FromJSON Comments where
+  parseJSON (AT.Object v) = Comments
+    <$> v A..: "type"
+    <*> v A..: "value"
+    <*> v A..: "range"
+    <*> v A..: "loc"
     
 instance AT.FromJSON EnumMember where
   parseJSON (AT.Object v) = EnumMember
@@ -404,6 +435,8 @@ instance AT.FromJSON Expression where
                       v A..: "name" <*>
                       v A..: "range" <*>
                       v A..:? "TypeAnnotation"
+      "loc" -> CommentLocation <$>
+               v A..: "loc"
 
       _ -> fail $ T.unpack $ exprType
 
@@ -476,11 +509,19 @@ instance AT.ToJSON PTypes where
   toJSON (PBool b)   = AT.Bool b
 
 instance AT.ToJSON Watcher where
-  toJSON (Watcher pType pBody) =
+  toJSON (Watcher pType pBody pComments) =
     AT.object [ "type" A..= pType
               , "body" A..= pBody
+              , "comments" A..= pComments
               ]
 
+instance AT.ToJSON Comments where
+  toJSON (Comments coType coValue coRange coLoc) =
+    AT.object [ "type" A..= coType
+              , "value" A..= coValue
+              , "range" A..= coRange
+              , "loc" A..= coLoc
+              ]
 instance AT.ToJSON Body where
   toJSON (EnumDeclaration etype eid emembers erange) =
     AT.object [ "type" A..= ("TSEnumDeclaration" :: T.Text)
@@ -651,7 +692,27 @@ instance AT.ToJSON Expression where
     , "range" A..= ideRange
     , "typeAnnotation" A..= ideTypeAnn
     ]
+  toJSON (CommentLocation comLoc) = AT.object
+    [ "loc" A..= comLoc]
+    
 
+instance AT.FromJSON Location where
+  parseJSON = AT.withObject "Location" $ \v ->
+    Location <$> v A..: "start"
+             <*> v A..: "end"
+
+instance AT.ToJSON Location where
+  toJSON (Location s e) = AT.object [ "start" A..= s, "end" A..= e]
+
+
+instance AT.FromJSON Position where
+  parseJSON = AT.withObject "Position" $ \v ->
+    Position <$> v A..: "line" <*> v A..: "column"
+
+instance AT.ToJSON Position where
+  toJSON (Position l c) = AT.object ["line" A..= l, "column" A..= c]
+
+  
 instance AT.ToJSON TemplateElement where
   toJSON (TemplateElement teType teValue teTail teRange) =
     AT.object [ "type" A..= teType
