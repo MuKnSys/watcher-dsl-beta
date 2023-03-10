@@ -94,7 +94,7 @@ parse astToParse  = do
 
 
 testPath :: FilePath
-testPath = "/home/pawel/Desktop/watcher-dsl-beta/data/copyOfDir"
+testPath = "/home/pawel/Desktop/watcher-dsl-beta/data/generatedJsonDirectory"
 
 -- mapDirectory :: FilePath -> IO GeneratedWatcherCode
 -- mapDirectory path = do
@@ -116,7 +116,6 @@ testPath = "/home/pawel/Desktop/watcher-dsl-beta/data/copyOfDir"
 mapJsonDirectory :: FilePath -> IO TSast
 mapJsonDirectory path = do
   isDir <- (doesDirectoryExist path :: IO Bool)
-  putStrLn $ "this mapJson" ++ show path
   if isDir
     then do
       contents <- (listDirectory path :: IO [FilePath])
@@ -140,7 +139,8 @@ generateCompiledWatcher (TSDirectory dirName contents) = do
 generateCompiledWatcher (TSFile fileName (PreCompiledWatcher watcher)) = do
   let encodeWatcher = BSS.unpack $ A.encode $ watcher 
   return (File fileName (CompiledWatcher encodeWatcher))
-
+generateCompiledWatcher (TSErr errorCode) = do
+  return (Err errorCode)
 
 
 
@@ -151,10 +151,15 @@ generateDir parent (Directory (DirName name) contents) = do
     mapM_ (generateDir dirPath) contents
 generateDir parent (File (FileName name) (CompiledWatcher contents)) = do
     let filePath = FP.replaceExtension (parent FP.</> name) "ts"
-    putStrLn $ "Here is contents : " ++  show contents
+    putStrLn $ "Input: " ++  show contents
     watcher <- N.parseTS contents
-    putStrLn $ "Here is watcher : " ++  show watcher
+    putStrLn $ "generated watcher code: " ++  show watcher
     writeFile filePath watcher
+generateDir [] (Err e) = do
+  putStrLn $ e
+generateDir (_:_) (Err e) = do
+  putStrLn $ show e
+
 
 
 
