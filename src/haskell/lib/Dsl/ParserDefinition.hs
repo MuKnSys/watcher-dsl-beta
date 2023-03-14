@@ -77,7 +77,18 @@ data Body
     , edMembers :: [EnumMember]
     , edRange :: [PTypes]
     }
+  | TSInterfaceDeclaration
+    { tsiType :: PTypes
+    , tsiBody :: BlockStatement 
+    , tsiId :: Id
+    , tsiRange :: [PTypes]
+    }
+  | EmptyStatement
+    { esType :: PTypes
+    , esRange :: [PTypes]
+    }
   deriving (Show)
+
 
 data EnumMember = EnumMember
   { emType :: PTypes
@@ -124,7 +135,18 @@ data Statement
     , ifConsequent :: BlockStatement
     , ifAlternate ::BlockStatement
     , ifRange :: [PTypes]
-    }deriving (Generic, Show)
+    }
+  | TSPropertySignature
+    { tspType :: PTypes
+    , tspComputed :: PTypes
+    , tspKey :: Id
+    , tspTypeAnnotation :: TSTypeAnnotation
+    , tspRange :: [PTypes]
+    }
+
+  deriving (Show)
+
+
 
 data Test
   = Test
@@ -207,6 +229,7 @@ data VariableDeclarator = VariableDeclarator
 
 
 
+  
 data Property = Property
   { opType :: PTypes
   , opKey :: Expression
@@ -311,8 +334,19 @@ instance AT.FromJSON Body where
                                 <*> v A..: "params"
                                 <*> v A..: "body"
                                 <*> v A..: "returnType"
+                                
+      "TSInterfaceDeclaration" -> TSInterfaceDeclaration
+                                  <$> v A..: "type"
+                                  <*> v A..: "body"
+                                  <*> v A..: "id"
+                                  <*> v A..: "range"
+
       "ExpressionStatement" ->  ExpressionStatement
                                 <$> v A..: "expression"
+      "EmptyStatement" -> EmptyStatement
+                                <$> v A..: "type"
+                                <*> v A..: "range"
+      
       "ClassDeclaration" -> fail "class declaration not allowed" 
       _ -> fail $ T.unpack $ bodyType
 
@@ -372,6 +406,12 @@ instance AT.FromJSON Statement where
                        v A..: "test" <*>
                        v A..: "consequent" <*>
                        v A..: "alternate" <*>
+                       v A..: "range"
+      "TSPropertySignature" -> TSPropertySignature <$>
+                       v A..: "type" <*>
+                       v A..: "computed" <*>
+                       v A..: "key" <*>
+                       v A..: "typeAnnotation" <*>
                        v A..: "range"
                        
       _ -> fail "Unknown Statement type"
@@ -552,6 +592,19 @@ instance AT.ToJSON Body where
     AT.object [ "type" A..= ("ExpressionStatement" :: T.Text)
               , "expression" A..= eexp
               ]
+  toJSON (EmptyStatement esTy esRe) =
+    AT.object [ "type" A..= ("EmptyStatement" :: T.Text)
+              , "range" A..= esRe
+              , "type" A..= esTy 
+              ]
+  toJSON (TSInterfaceDeclaration tsiTy tsiBo tsiId tsiRange) =
+    AT.object [ "type" A..= ("TSInterfaceDeclaration" :: T.Text)
+              , "body" A..= tsiBo
+              , "id" A..= tsiId
+              , "range" A..= tsiRange
+              , "type" A..= tsiTy
+              ]
+
 
 
 
@@ -623,6 +676,13 @@ instance AT.ToJSON Statement where
               , "consequent" A..= ifConsequent
               , "alternate" A..= ifAlternate
               , "range" A..= ifRange
+              ]
+  toJSON (TSPropertySignature tspType tspComputed tspKey tspTypeAnn tspRange) =
+    AT.object [ "type" A..= tspType
+              , "computed" A..= tspComputed
+              , "key" A..= tspKey
+              , "typeAnnotation" A..= tspTypeAnn
+              , "range" A..= tspRange
               ]
 
 instance AT.ToJSON Property where
