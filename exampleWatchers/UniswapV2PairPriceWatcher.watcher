@@ -1,0 +1,24 @@
+// This watcher is responsible for fetching the reserves and calculating the price for a Uniswap V2 pair.
+// It imports the required contract interface and defines two request functions,
+// one to fetch the reserves and another to calculate the price.
+
+import contract IUniswapV2Pair.Call.getReserves from "https://etherscan.io/address/0xUniswapV2Pair";
+import config Config from "./config";
+
+
+config Config {
+  address: string;
+}
+
+
+request getReserves () {
+  const reserves = IUniswapV2Pair.at(config.address).Call.getReserves();
+  respond { reserve0: reserves.reserve0, reserve1: reserves.reserve1 };
+}
+
+
+request getPrice () {
+  const reserves = IUniswapV2Pair.at(config.address).Call.getReserves();
+  const price = reserves.reserve0 / reserves.reserve1;
+  respond { price };
+}

@@ -1,0 +1,46 @@
+// This watcher is responsible for monitoring the transactions of an ERC20 token and calculating
+// the ratio of scammers to non-scammers who are selling the tokens.
+// It imports the required contract interfaces, listens for transfer events,
+// and defines a request function to fetch the scammer ratio.
+
+import contract ERC20.Event.Transfer from "https://erc20-contract-url.example";
+import contract ScammersDatabase.Call.isScammer from "https://scammers-database-contract-url.example";
+import { Config } from "./config";
+
+
+type ScammerRatio = {
+    ratio: number;
+};
+
+
+type AddressStatus = {
+    isScammer: boolean;
+    amount: number;
+};
+
+
+fetch (event: ERC20.Event.Transfer) {
+    const seller = event.from;
+    const amount = event.value;
+    const isScammer = ScammersDatabase.at(Config.scammersDatabaseAddress).Call.isScammer(seller).get();
+
+
+    const addressStatus: AddressStatus = { isScammer, amount };
+    store(addressStatus);
+}
+
+
+request getScammerRatio(): ScammerRatio {
+    const addressStatuses: AddressStatus[] = load("*");
+    // methods of Array, used bellow in general WILL NOT be transalted to same functions in TS
+    const totalAmount = addressStatuses.reduce((acc, status) => acc + status.amount, 0);
+    const scammerAmount = addressStatuses.filter((status) => status.isScammer).reduce((acc, status) => acc + status.amount, 0);
+
+
+    const ratio = totalAmount > 0 ? scammerAmount / totalAmount : 0;
+    respond({ ratio });
+}
+
+
+
+
