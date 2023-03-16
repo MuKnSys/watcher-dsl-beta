@@ -63,6 +63,24 @@ data Body
     , fBody        :: BlockStatement
     , fReturnType  :: TSTypeAnnotation
     }
+  | ImportDeclaration
+    { imType :: PTypes
+    , imSource :: Expression
+    , imSpecifiers :: [Specifiers]
+    , imImportKind :: PTypes
+    , imAssertion :: [Maybe PTypes]
+    , imRange :: [PTypes]
+    }
+  | ExportNamedDeclaration
+    { exType :: PTypes
+    , exDeclaration :: Body
+    , exSpecifiers :: [Maybe PTypes]
+    , exSource :: PTypes
+    , exExportKind :: PTypes
+    , exRange :: [PTypes]
+    , exAssertion :: [PTypes]
+
+    }
   | ExpressionStatement
     { eExpression :: Expression
     }
@@ -263,7 +281,13 @@ data ELExpression = ELExpression
   , elRange :: [PTypes]
   } deriving (Generic, Show)
 
-
+data Specifiers = ImportSpecifier
+  { isType :: PTypes
+  , isLocal :: Expression
+  , isImported :: Expression
+  , isImportKind :: PTypes
+  , isRange :: [PTypes]
+  } deriving (Show)
 
 data TSTypeAnnotation = TSTypeAnnotation
   { tsType :: PTypes
@@ -278,7 +302,8 @@ data TSTypeAnnotation = TSTypeAnnotation
 instance AT.FromJSON PTypes where
   parseJSON (AT.String s) = return (PString (T.unpack s))
   parseJSON (AT.Number n) = return (PNumber (truncate n))
-  parseJSON (AT.Bool b)   = return (PBool b)
+  parseJSON (AT.Bool b) = return (PBool b)
+  parseJSON (AT.Null) = return (PNull) 
   parseJSON _             = fail "Invalid pTypes"
   
 instance AT.FromJSON Watcher where
@@ -346,10 +371,36 @@ instance AT.FromJSON Body where
       "EmptyStatement" -> EmptyStatement
                                 <$> v A..: "type"
                                 <*> v A..: "range"
+      "ImportDeclaration" -> ImportDeclaration
+                             <$> v A..: "type"
+                             <*> v A..: "source"
+                             <*> v A..: "specifiers"
+                             <*> v A..: "importKind"
+                             <*> v A..: "assertions"
+                             <*> v A..: "range"
+      "ExportNamedDeclaration" -> ExportNamedDeclaration
+                                  <$> v A..: "type"
+                                  <*> v A..: "declaration"
+                                  <*> v A..: "specifiers"
+                                  <*> v A..: "source"
+                                  <*> v A..: "exportKind"
+                                  <*> v A..: "range"
+                                  <*> v A..: "assertions"
       
       "ClassDeclaration" -> fail "class declaration not allowed" 
       _ -> fail $ T.unpack $ bodyType
 
+instance AT.FromJSON Specifiers where
+  parseJSON (AT.Object v) = do
+    bodyType <- v A..: "type" :: AT.Parser T.Text 
+    case bodyType of
+      "ImportSpecifier" -> ImportSpecifier <$>
+                             v A..: "type" <*>
+                             v A..: "local" <*>
+                             v A..: "imported" <*>
+                             v A..: "importKind" <*>
+                             v A..: "range"
+      _ -> fail $ T.unpack $ bodyType
 
 instance AT.FromJSON Test where
   parseJSON (AT.Object v) = Test <$>
@@ -546,7 +597,8 @@ instance AT.FromJSON TypeAnnotation where
 instance AT.ToJSON PTypes where
   toJSON (PString s) = AT.String (T.pack s)
   toJSON (PNumber n) = AT.Number (fromIntegral n)
-  toJSON (PBool b)   = AT.Bool b
+  toJSON (PBool b) = AT.Bool b
+  toJSON (PNull) = AT.Null
 
 instance AT.ToJSON Watcher where
   toJSON (Watcher pType pBody pSourceType pRange pComments) =
@@ -604,8 +656,37 @@ instance AT.ToJSON Body where
               , "range" A..= tsiRange
               , "type" A..= tsiTy
               ]
+  toJSON (ImportDeclaration idTy idSo idSpec idImpKind idAsse idRange) =
+    AT.object [ "type" A..= ("ImportDeclaration" :: T.Text)
+              , "type" A..= idTy
+              , "source" A..= idSo
+              , "specifiers" A..= idSpec
+              , "importKind" A..= idImpKind
+              , "assertions" A..= idAsse
+              , "range" A..= idRange
+              ]
+  toJSON (ExportNamedDeclaration endTyoe endDecl endSpec endSource endExKind endRange endAssert) =
+    AT.object [ "type" A..= ("ExportNamedDeclaration" :: T.Text)
+              , "type" A..= endTyoe
+              , "declaration" A..= endDecl
+              , "specifiers" A..= endSpec
+              , "source" A..= endSource
+              , "exportKind" A..= endExKind
+              , "range" A..= endRange
+              , "assertions" A..= endAssert
+              ]
 
 
+
+instance AT.ToJSON Specifiers where
+  toJSON (ImportSpecifier isType isLocal isImported isImportKind isRange) =
+    AT.object [ "type" A..= ("ImportSpecifier" :: T.Text)
+              , "type" A..= isType
+              , "local" A..= isLocal
+              , "imported" A..= isImported
+              , "importKind" A..= isImportKind
+              , "range" A..= isRange
+              ]
 
 
 instance A.ToJSON EnumMember where
