@@ -59,9 +59,9 @@ data Body
     , fGenerator   :: PTypes
     , fExpression  :: PTypes
     , fAsync       :: PTypes
-    , fParams      :: [Param]
+    , fParams      :: [Expression]
     , fBody        :: BlockStatement
-    , fReturnType  :: TSTypeAnnotation
+    , fReturnType  :: Maybe TSTypeAnnotation
     }
   | ImportDeclaration
     { imType :: PTypes
@@ -81,14 +81,9 @@ data Body
     , exAssertion :: [PTypes]
 
     }
-  | ExpressionStatement
-    { eExpression :: Expression
-    }
-  | VariableDeclaration
-    { vdType :: PTypes
-    , vdDeclarations :: [VariableDeclarator]
-    , vdKind :: PTypes
-    }
+  -- | ExpressionStatement
+    -- { eExpression :: Expression
+    -- }
   | EnumDeclaration
     { edType :: PTypes
     , edId :: Id
@@ -104,6 +99,17 @@ data Body
   | EmptyStatement
     { esType :: PTypes
     , esRange :: [PTypes]
+    }
+  | TSTypeAliasDeclaration
+    { tadType :: PTypes
+    , tadId :: Expression
+    , tadTypeAnnotation :: TypeAnnotation
+    , tadRange :: [PTypes]
+    }
+  | VariableDeclarationE
+    { vdeType :: PTypes
+    , vdeDeclarations :: [VariableDeclarator]
+    , vdeKind :: PTypes
     }
   deriving (Show)
 
@@ -128,12 +134,6 @@ data Id = Id
   , idRange :: [PTypes]
   } deriving (Generic, Show)
 
-data Param = Param
-  { paramTypeAnnotation :: TSTypeAnnotation
-  , paramType :: PTypes
-  , paramName :: PTypes
-  , paramRange :: [PTypes]
-  } deriving (Generic, Show)
 
 data BlockStatement = BlockStatement
   { bsType :: PTypes
@@ -151,7 +151,7 @@ data Statement
     { ifType :: PTypes
     , ifTest :: Test
     , ifConsequent :: BlockStatement
-    , ifAlternate ::BlockStatement
+    , ifAlternate ::Maybe BlockStatement
     , ifRange :: [PTypes]
     }
   | TSPropertySignature
@@ -160,6 +160,15 @@ data Statement
     , tspKey :: Id
     , tspTypeAnnotation :: TSTypeAnnotation
     , tspRange :: [PTypes]
+    }
+  | VariableDeclaration
+    { vdType :: PTypes
+    , vdDeclarations :: [VariableDeclarator]
+    , vdKind :: PTypes
+    }
+  | ExpressionStatement
+    { eType :: PTypes
+    , eExpression :: Expression
     }
 
   deriving (Show)
@@ -186,7 +195,8 @@ data PTypes
 
 data Expression
   = CallExpression
-    { ceCallee :: Expression
+    { ceType :: Maybe PTypes
+    , ceCallee :: Expression
     , ceArguments :: Maybe [Expression]
     , ceOptional :: PTypes
     , ceRange :: [PTypes]
@@ -235,6 +245,43 @@ data Expression
     , iName :: PTypes
     , iRange :: [PTypes]
     , idTypeAnnotation :: Maybe TSTypeAnnotation
+    }
+  | TSAsExpression
+    { tsaType :: PTypes
+    , tsaExpression :: Expression
+    , tsaTypeAnnotation :: Maybe TSTypeAnnotation
+    , tsaRange :: [PTypes]
+    }
+  | ArrowFunctionExpression
+    { afeType :: PTypes
+    , afeGenerator :: PTypes
+    , afeId :: PTypes
+    , afeParams :: [Expression]
+    , afeBody :: Expression
+    , afeAsync :: PTypes
+    , afeExpression :: PTypes
+    , afeRange :: [PTypes]
+    }
+  | Param
+    { paramTypeAnnotation ::Maybe TSTypeAnnotation
+    , paramType :: PTypes
+    , paramName :: PTypes
+    , paramRange :: [PTypes]
+    }
+  | ConditionalExpression
+    { cexType :: PTypes
+    , cexTest :: Test
+    , cexConsequent :: Expression
+    , cexAlternate :: Maybe Expression
+    , cexRange :: [PTypes]
+    }
+  | AssignmentExpression
+    { aeType :: PTypes
+    , aeOperator :: PTypes
+    , aeLeft :: ELExpression
+    , aeRight :: Expression
+    , aeRange :: [PTypes]
+
     }
   deriving (Generic, Show)
 
@@ -292,8 +339,44 @@ data Specifiers = ImportSpecifier
 data TSTypeAnnotation = TSTypeAnnotation
   { tsType :: PTypes
   , tsRange :: [PTypes]
-  , tsTypeAnnotation :: TypeAnnotation
+  , tsTypeAnnotation :: Maybe TypeAnnotation
   } deriving (Generic, Show)
+
+ 
+
+data TypeAnnotation
+  = TSTypeAnnotationAnnotation TSTypeAnnotation
+  | TSStringKeywordAnnotation String
+  | TSNumberKeywordAnnotation String
+  | TSBooleanKeywordAnnotation String
+  | TSTypeReference
+    { trType :: PTypes
+    , trTypeName :: Maybe Expression
+    }
+    
+  | TSTypeLiteral
+    { tstType :: PTypes
+    , tstMembers :: [Statement]
+    , tstRange :: [PTypes]
+    }
+  | TSArrayType
+    { tsarType :: PTypes
+    , tsarElementType :: TypeAnnotation
+    , tsarRange :: [PTypes]
+    }
+  | TSUnionType
+    { tsuType :: PTypes
+    , tsuTypes :: [TypeAnnotation]
+    , range :: [PTypes]
+    }
+  | TSNullKeyword
+    { tsnType :: PTypes
+    , tsnRange :: [PTypes]
+    }
+  deriving (Generic, Show)
+
+
+
 
 -- data TypeAnnotation = TSStringKeyword | TSNumberKeyword deriving (Generic, Show)
 
@@ -346,10 +429,7 @@ instance AT.FromJSON Body where
                              <*> v A..: "id"
                              <*> v A..: "members"
                              <*> v A..: "range"
-      "VariableDeclaration" ->  VariableDeclaration
-                                <$> v A..: "type"
-                                <*> v A..: "declarations"
-                                <*> v A..: "kind"
+
       "FunctionDeclaration" ->  FunctionDeclaration
                                 <$> v A..: "type"
                                 <*> v A..: "id"
@@ -358,7 +438,7 @@ instance AT.FromJSON Body where
                                 <*> v A..: "async"
                                 <*> v A..: "params"
                                 <*> v A..: "body"
-                                <*> v A..: "returnType"
+                                <*> v A..:? "returnType"
                                 
       "TSInterfaceDeclaration" -> TSInterfaceDeclaration
                                   <$> v A..: "type"
@@ -366,8 +446,6 @@ instance AT.FromJSON Body where
                                   <*> v A..: "id"
                                   <*> v A..: "range"
 
-      "ExpressionStatement" ->  ExpressionStatement
-                                <$> v A..: "expression"
       "EmptyStatement" -> EmptyStatement
                                 <$> v A..: "type"
                                 <*> v A..: "range"
@@ -386,6 +464,16 @@ instance AT.FromJSON Body where
                                   <*> v A..: "exportKind"
                                   <*> v A..: "range"
                                   <*> v A..: "assertions"
+      "TSTypeAliasDeclaration" -> TSTypeAliasDeclaration
+                                  <$> v A..: "type"
+                                  <*> v A..: "id"
+                                  <*> v A..: "typeAnnotation"
+                                  <*> v A..: "range"
+      "VariableDeclaration" -> VariableDeclarationE
+                                  <$> v A..: "type"
+                                  <*> v A..: "declarations"
+                                  <*> v A..: "kind"
+      
       
       "ClassDeclaration" -> fail "class declaration not allowed" 
       _ -> fail $ T.unpack $ bodyType
@@ -428,14 +516,6 @@ instance AT.FromJSON Id where
                             <*> v A..: "range"
   parseJSON _ = fail "Invalid Id"
 
-instance AT.FromJSON Param where
-  parseJSON (AT.Object v) = Param <$>
-                            v A..: "typeAnnotation" <*>
-                            v A..: "type" <*>
-                            v A..: "name" <*>
-                            v A..: "range"
-  parseJSON _ = fail "Invalid Parameter"
-
 instance AT.FromJSON BlockStatement where
   parseJSON (AT.Object v) = BlockStatement <$>
                             v A..: "type" <*>
@@ -456,7 +536,7 @@ instance AT.FromJSON Statement where
                        v A..: "type" <*>
                        v A..: "test" <*>
                        v A..: "consequent" <*>
-                       v A..: "alternate" <*>
+                       v A..:? "alternate" <*>
                        v A..: "range"
       "TSPropertySignature" -> TSPropertySignature <$>
                        v A..: "type" <*>
@@ -464,6 +544,13 @@ instance AT.FromJSON Statement where
                        v A..: "key" <*>
                        v A..: "typeAnnotation" <*>
                        v A..: "range"
+      "VariableDeclaration" ->  VariableDeclaration
+                                <$> v A..: "type"
+                                <*> v A..: "declarations"
+                                <*> v A..: "kind"
+      "ExpressionStatement" ->  ExpressionStatement
+                                <$> v A..: "type"
+                                <*> v A..: "expression"
                        
       _ -> fail "Unknown Statement type"
 
@@ -501,6 +588,7 @@ instance AT.FromJSON Expression where
                             v A..: "expressions" <*>
                             v A..: "range"
       "CallExpression" -> CallExpression <$>
+                           v A..:? "type" <*>
                            v A..: "callee" <*>
                            v A..:? "arguments" <*>
                            v A..: "optional" <*>
@@ -525,7 +613,41 @@ instance AT.FromJSON Expression where
                       v A..: "type" <*>
                       v A..: "name" <*>
                       v A..: "range" <*>
-                      v A..:? "TypeAnnotation"
+                      v A..:? "typeAnnotation"
+      "TSAsExpression" -> TSAsExpression <$>
+                      v A..: "type" <*>
+                      v A..: "expression" <*>
+                      v A..:? "typeAnnotation" <*>
+                      v A..: "range"
+      "ArrowFunctionExpression" -> ArrowFunctionExpression <$>
+                                   v A..: "type" <*>
+                                   v A..: "generator" <*>
+                                   v A..: "id" <*>
+                                   v A..: "params" <*>
+                                   v A..: "body" <*>
+                                   v A..: "async" <*>
+                                   v A..: "expression" <*>
+                                   v A..: "range"
+      "Param" -> Param <$>
+        v A..:? "typeAnnotation" <*>
+        v A..: "type" <*>
+        v A..: "name" <*>
+        v A..: "range"
+        
+      "ConditionalExpression" -> ConditionalExpression <$>
+        v A..: "type" <*>
+        v A..: "test" <*>
+        v A..: "consequent" <*>
+        v A..:? "alternate" <*>
+        v A..: "range"
+
+      "AssignmentExpression" -> AssignmentExpression <$>
+        v A..: "type" <*>
+        v A..: "operator" <*>
+        v A..: "left" <*>
+        v A..: "right" <*>
+        v A..: "range" 
+        
       _ -> fail $ T.unpack $ exprType
 
 
@@ -559,16 +681,9 @@ instance AT.FromJSON TSTypeAnnotation where
   parseJSON (AT.Object v) = TSTypeAnnotation <$>
                             v A..: "type" <*>
                             v A..: "range" <*>
-                            v A..: "typeAnnotation"
+                            v A..:? "typeAnnotation"
   parseJSON _ = fail "Invalid Type Annotation"
 
-data TypeAnnotation
-  = TSTypeAnnotationAnnotation TSTypeAnnotation
-  | TSStringKeywordAnnotation String
-  | TSNumberKeywordAnnotation String
-  | TSBooleanKeywordAnnotation String
-  | TSTypeReference String
-  deriving (Generic, Show)
 
 
 instance AT.FromJSON TypeAnnotation where
@@ -578,14 +693,31 @@ instance AT.FromJSON TypeAnnotation where
       "TSTypeAnnotation" -> TSTypeAnnotationAnnotation <$>
                               v A..: "typeAnnotation"
       "TSTypeReference" -> TSTypeReference <$>
-                             v A..: "type"
+                             v A..: "type" <*>
+                             v A..:? "typeName"
       "TSStringKeyword" -> TSStringKeywordAnnotation <$>
                              v A..: "type"
       "TSNumberKeyword" -> TSNumberKeywordAnnotation <$>
                              v A..: "type"
       "TSBooleanKeyword" -> TSBooleanKeywordAnnotation <$>
                               v A..: "type"
-              
+      "TSTypeLiteral" -> TSTypeLiteral <$>
+                         v A..: "type" <*>
+                         v A..: "members" <*>
+                         v A..: "range"
+      "TSArrayType" -> TSArrayType <$>
+                         v A..: "type" <*>
+                         v A..: "elementType" <*>
+                         v A..: "range"
+      "TSUnionType" -> TSUnionType <$>
+                       v A..: "type" <*>
+                       v A..: "types" <*>
+                       v A..: "range"
+      "TSNullKeyword" -> TSNullKeyword <$>
+                       v A..: "type" <*>
+                       v A..: "range"
+
+
       "TSAnyKeyword"  -> error "any type not allowed"
       "TSUndefinedKeyword" -> error "undefined type not allowed"
 
@@ -623,12 +755,7 @@ instance AT.ToJSON Body where
               , "members" A..= emembers
               , "range" A..= erange
               ]
-  toJSON (VariableDeclaration vtype vdeclarations vkind) =
-    AT.object [ "type" A..= ("VariableDeclaration" :: T.Text)
-              , "declarations" A..= vdeclarations
-              , "kind" A..= vkind
-              , "type" A..= vtype
-              ]
+
   toJSON (FunctionDeclaration ftype fid fgen fexp fasyn fparams fbody frettype) =
     AT.object [ "type" A..= ("FunctionDeclaration" :: T.Text)
               , "id" A..= fid
@@ -640,10 +767,7 @@ instance AT.ToJSON Body where
               , "returnType" A..= frettype
               , "type" A..= ftype
               ]
-  toJSON (ExpressionStatement eexp) =
-    AT.object [ "type" A..= ("ExpressionStatement" :: T.Text)
-              , "expression" A..= eexp
-              ]
+
   toJSON (EmptyStatement esTy esRe) =
     AT.object [ "type" A..= ("EmptyStatement" :: T.Text)
               , "range" A..= esRe
@@ -675,6 +799,21 @@ instance AT.ToJSON Body where
               , "range" A..= endRange
               , "assertions" A..= endAssert
               ]
+  toJSON (TSTypeAliasDeclaration talType talId talTypeAnn telRange ) =
+    AT.object [ "type" A..= ("TSTypeAliasDeclaration" :: T.Text)
+              , "type" A..= talType
+              , "id" A..= talId
+              , "typeAnnotation" A..= talTypeAnn
+              , "range" A..= telRange
+              ]
+  toJSON (VariableDeclarationE vdeType vdeDec vdeKind ) =
+    AT.object [ "type" A..= ("TSTypeAliasDeclaration" :: T.Text)
+              , "type" A..= vdeType
+              , "declarations" A..= vdeDec
+              , "kind" A..= vdeKind
+              ]
+
+
 
 
 
@@ -729,14 +868,6 @@ instance AT.ToJSON Id where
               , "range" A..= idRange
               ]
 
-instance AT.ToJSON Param where
-  toJSON (Param typeAnnotation pType pName pRange) = 
-    AT.object [ "typeAnnotation" A..= typeAnnotation
-              , "type" A..= pType
-              , "name" A..= pName
-              , "range" A..= pRange
-              ]
-    
 instance AT.ToJSON BlockStatement where
   toJSON (BlockStatement bsType bsBody bsRange) =
     AT.object [ "type" A..= bsType
@@ -765,6 +896,17 @@ instance AT.ToJSON Statement where
               , "typeAnnotation" A..= tspTypeAnn
               , "range" A..= tspRange
               ]
+  toJSON (VariableDeclaration vtype vdeclarations vkind) =
+    AT.object [ "type" A..= ("VariableDeclaration" :: T.Text)
+              , "declarations" A..= vdeclarations
+              , "kind" A..= vkind
+              , "type" A..= vtype
+              ]
+  toJSON (ExpressionStatement eetype eexp) = AT.object $
+    [ "type" A..= ("ExpressionStatement" :: T.Text)
+    , "type" A..= eetype
+    , "expression" A..= eexp
+    ]
 
 instance AT.ToJSON Property where
   toJSON (Property propType propKey propValue propComputed propMethod propShorthand propKind propRange) =
@@ -802,8 +944,9 @@ instance AT.ToJSON Expression where
     , "expressions" A..= tlExpression
     , "range" A..= tlRange
     ]
-  toJSON (CallExpression ceCallee ceArguments ceOptional ceRange) = AT.object
+  toJSON (CallExpression ceType ceCallee ceArguments ceOptional ceRange) = AT.object
     [ "type" A..= ( "CallExpression" :: T.Text)
+    , "type" A..= ceType
     , "callee" A..= ceCallee
     , "arguments" A..= ceArguments
     , "optional" A..= ceOptional
@@ -835,6 +978,46 @@ instance AT.ToJSON Expression where
     , "range" A..= ideRange
     , "typeAnnotation" A..= ideTypeAnn
     ]
+  toJSON (TSAsExpression tsaType tsaExpre tsaTypeAnn tsaRange) = AT.object $
+    [ "type" A..=( "Identifier" :: T.Text)
+    , "type" A..= tsaType
+    , "expression" A..= tsaExpre
+    , "typeAnnotation" A..= tsaTypeAnn
+    , "range" A..= tsaRange
+    ]
+  toJSON (ArrowFunctionExpression afeType afeGenerator afeId afeParams afeBody afeAsync afeExpression afeRange) = AT.object $
+    [ "type" A..=( "Identifier" :: T.Text)
+    , "type" A..= afeType
+    , "generator" A..= afeGenerator
+    , "id" A..= afeId
+    , "params" A..= afeParams
+    , "body" A..= afeBody
+    , "async" A..= afeAsync
+    , "expression" A..= afeExpression
+    , "range" A..= afeRange
+    ]
+  toJSON (Param typeAnnotation pType pName pRange) = 
+    AT.object [ "typeAnnotation" A..= typeAnnotation
+              , "type" A..= pType
+              , "name" A..= pName
+              , "range" A..= pRange
+              ]
+  toJSON (ConditionalExpression cexType cexTest cexConsteq cexAlter cexRange) = 
+    AT.object [ "type" A..= cexType
+              , "test" A..= cexTest
+              , "consequent" A..= cexConsteq
+              , "alternate" A..= cexAlter
+              , "range" A..= cexRange
+              ]
+  toJSON (AssignmentExpression aseType aseOpera aseLeft aseRight aseRange) = 
+    AT.object [ "type" A..= aseType
+              , "operator" A..= aseOpera
+              , "left" A..= aseLeft
+              , "right" A..= aseRight
+              , "range" A..= aseRange
+              ]
+
+
 
 
 instance AT.FromJSON Location where
@@ -887,11 +1070,36 @@ instance AT.ToJSON TypeAnnotation where
     AT.object [ "type" A..= AT.String "TSTypeAnnotation"
               , "typeAnnotation" A..= tsaTypeAnnotation
               ]
-  toJSON (TSTypeReference tsrType) =
-    AT.object [ "type" A..= tsrType ]
+  toJSON (TSTypeReference tsrType tsrTypeName) =
+    AT.object [ "type" A..= tsrType
+              , "typeName" A..= tsrTypeName
+              ]
   toJSON (TSStringKeywordAnnotation tsString) =
     AT.object [ "type" A..= AT.String "TSStringKeyword" ]
   toJSON (TSNumberKeywordAnnotation tsNumber) =
     AT.object [ "type" A..= AT.String "TSNumberKeyword" ]
   toJSON (TSBooleanKeywordAnnotation tsBool) =
     AT.object [ "type" A..= AT.String "TSBooleanKeyword" ]
+  toJSON (TSTypeLiteral tslType tslMember tslRange) =
+    AT.object [ "type" A..= AT.String "TSTypeLiteral"
+              , "type" A..= tslType
+              , "members" A..= tslMember
+              , "range" A..= tslRange
+              ]
+  toJSON (TSArrayType tsaType tsaElType tsaRange) =
+    AT.object [ "type" A..= AT.String "TSArrayType"
+              , "type" A..= tsaType
+              , "elementType" A..= tsaElType
+              , "range" A..= tsaRange
+              ]
+  toJSON (TSUnionType tsuType tsuTypes tsuRange) =
+    AT.object [ "type" A..= AT.String "TSUnionType"
+              , "type" A..= tsuType
+              , "types" A..= tsuTypes
+              , "range" A..= tsuRange
+              ]
+  toJSON (TSNullKeyword tsnType tsnRange) =
+    AT.object [ "type" A..= AT.String "TSNullKeyword"
+              , "type" A..= tsnType
+              , "range" A..= tsnRange
+              ]
