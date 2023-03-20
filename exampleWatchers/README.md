@@ -7,7 +7,7 @@ This folder contains a collection of watchers that demonstrate various use cases
 Please note that there might be slight differences from the specifications of the DSL, but they have been accounted for and should not affect the key design ideas.
 
 ## Watchers
-- ERC20 Total Supply Watcher ([ERC20TotalSupplyWatcher.watcher](ERC20HoldersWatcher.watcher)) - This is the simplest watcher, which queries the total supply of an ERC20 token.
+- ERC20 Total Supply Watcher ([ERC20TotalSupplyWatcher.watcher](ERC20TotalSupplyWatcher.watcher)) - This is the simplest watcher, which queries the total supply of an ERC20 token.
 
 - ERC20 Holders Watcher (ERC20HoldersWatcher.watcher) - This watcher fetches the list of holders of an ERC20 token with a balance greater than a specified amount.
 
