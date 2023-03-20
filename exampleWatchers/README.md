@@ -1,6 +1,6 @@
 # ERC20 and Uniswap V2 Watchers
 
-[specs](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvyHVA-v0WEXEdTiFYO6q4)
+[DSL SPECIFICATION](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvyHVA-v0WEXEdTiFYO6q4)
 
 This folder contains a collection of watchers that demonstrate various use cases for monitoring and analyzing ERC20 tokens and Uniswap V2 pairs using our custom Domain Specific Language (DSL). These examples are ordered from the simplest to the most complex.
 
