@@ -1,4 +1,4 @@
-// This watcher is responsible for fetching the list of holders
+// This watcher is from the a predefined list of adresses, is fetching the list of holders
 // of an ERC20 token that have a balance greater than a specified amount.
 // It imports the required contract interface and defines a request function
 // to filter and fetch the holder list.
