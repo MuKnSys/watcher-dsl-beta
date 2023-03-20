@@ -1,5 +1,7 @@
 # watcher-dsl-beta
 
+*[DSL SPECIFICATION](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvyHVA-v0WEXEdTiFYO6q4)*
+
 A repository for domain specific language
 #### preview:
  08-03-23 
