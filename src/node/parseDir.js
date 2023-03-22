@@ -1,6 +1,11 @@
 const { parse } = require('@typescript-eslint/parser');
 const fs = require('fs');
 const path = require('path');
+const phrasesToSearch = require('./replace').phrasesToSearch
+const inputdir = process.argv[2];
+const outputdir = process.argv[3];
+// const inputdir = "/home/pawel/Desktop/watcher-dsl-beta/data/exampleWatchers"
+// const outputdir = '/home/pawel/Desktop/watcher-dsl-beta/data/generetedTSJSON'; 
 const parserOptions = {
     sourceType: 'module',
     removeComments: false,
@@ -8,21 +13,23 @@ const parserOptions = {
     ecmaVersion: 2020,
     include: [path.join(__dirname, 'estree.ts')],
     project: path.join(__dirname, 'tsconfig.json'),
-    range : true
-
+    range : true,
+    attachComments: true,
+    errorOnUnknownASTType: false,
+    emitDecoratorMetadata : true, 
   };
-  
-const inputdir = "/home/pawel/Desktop/watcher-dsl-beta/data/test"
-const outputdir = '/home/pawel/Desktop/watcher-dsl-beta/data/generetedTSJSON'; 
 
-// const inputdir = process.argv[2];
-// const outputdir = process.argv[3];
 
 
 function processFile(inputPath, outputPath) {
   try {
     const code = fs.readFileSync(inputPath, 'utf-8');
-    const ast = parse(code, parserOptions);
+    let replacedCode = code;
+  
+    phrasesToSearch.forEach(phrase => {
+      replacedCode = replacedCode.replace(new RegExp(phrase.search, 'g'), phrase.replace);
+    });
+    const ast = parse(replacedCode, parserOptions);
     fs.writeFileSync(outputPath, JSON.stringify(ast, null, 2));
   } catch (err) {
     console.error(`Error while processing file '${inputPath}': ${err.message}`);
