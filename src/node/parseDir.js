@@ -4,8 +4,7 @@ const path = require('path');
 const phrasesToSearch = require('./replace').phrasesToSearch
 const inputdir = process.argv[2];
 const outputdir = process.argv[3];
-// const inputdir = "/home/pawel/Desktop/watcher-dsl-beta/data/exampleWatchers"
-// const outputdir = '/home/pawel/Desktop/watcher-dsl-beta/data/generetedTSJSON'; 
+ 
 const parserOptions = {
     sourceType: 'module',
     removeComments: false,
