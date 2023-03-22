@@ -28,12 +28,12 @@ jsonDir = "/tmp/parseTS.json"
 --       putStrLn output
 --       return $ Right output
 
-testDir = "/home/pawel/Desktop/watcher-dsl-beta/data/copyOfDir"
+testDir = "/home/pawel/Desktop/watcher-dsl-beta/data/generatedJsonDirector"
 
-startNode :: String -> IO(Either String String)
-startNode dir  = do
+startNode :: String -> String -> IO(Either String String)
+startNode dir outputDir  = do
   putStrLn "Running node process..."
-  let com = "node ../node/parseDir.js "
+  let com = "node ../node/parseDir.js  "++ dir ++ " " ++ outputDir
   output <- try $ readCreateProcess (shell com) {cwd = Just "/home/pawel/Desktop/watcher-dsl-beta/src/node"} []
   case output of
     Left (e :: SomeException) -> do
