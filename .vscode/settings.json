@@ -1,0 +1,18 @@
+{
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "eslint.enable": true,
+    "eslint.validate": [
+      "javascript",
+      "typescript"
+    ],
+    "eslint.options": {
+      "configFile": "src/node/.eslintrc.js"
+    },
+    "files.associations": {
+      "*.watcher": "typescript"
+  }
+  
+    
+}
