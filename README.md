@@ -6,6 +6,9 @@ You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvy
 
 ## Dependencies
 
+* Haskell and Cabal
+* Node JS and npm
+
 ## Examples
 
 #### preview:
