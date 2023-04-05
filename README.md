@@ -30,5 +30,3 @@ A repository for domain specific language
  
 
 https://user-images.githubusercontent.com/76069115/220672066-92fb5bc3-f413-4769-82f2-71677e5fa80a.mp4
-
-
