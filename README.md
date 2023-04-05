@@ -8,7 +8,6 @@ You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvy
 
 ## Examples
 
-A repository for domain specific language
 #### preview:
  27-03-23 
  [![Demo](https://i.imgur.com/pqrbpWp.png)](https://vimeo.com/810525901) 
