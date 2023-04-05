@@ -5,6 +5,7 @@ module Dsl.Main (main) where
 
 import qualified Dsl.NodeRunner as N
 import qualified Dsl.ParseNode as P
+import qualified Dsl.ConfigGenerator as CG 
 import Prelude
 import System.Environment
 import Control.Exception
@@ -79,4 +80,6 @@ main = do
           putStrLn $ show $ tsWatcher
           P.generateDir testPathForGeneratedWatchers tsWatcher
           exitSuccess
+    ("test-watcher" : _) -> do
+      CG.configGenerator 
     _ -> putStrLn "unrecognized args"

@@ -153,6 +153,7 @@ generateDir parent (File (FileName name) (CompiledWatcher contents)) = do
     let filePath = FP.replaceExtension (parent FP.</> name) "ts"
     putStrLn $ "Input: " ++  show contents
     watcher <- N.parseTS contents
+    writeFile "/tmp/tsJson.json" contents
     putStrLn $ "generated watcher code: " ++  show watcher
     writeFile filePath watcher
 generateDir [] (Err e) = do

@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# OPTIONS_GHC -Wincomplete-patterns #-}
 module Dsl.ParserDefinition where
 
 import Prelude
@@ -27,8 +28,8 @@ data DirName = DirName String  deriving Show
 data FileName = FileName String  deriving Show
 
 data Watcher = Watcher
-  { pType :: Maybe String
-  , pBody :: Maybe [Body]
+  { pType :: String
+  , pBody :: [Body]
   , pSourceType :: PTypes 
   , pRange :: [PTypes]
   , pComments :: Maybe [Comments]
@@ -81,9 +82,6 @@ data Body
     , exAssertion :: [PTypes]
 
     }
-  -- | ExpressionStatement
-    -- { eExpression :: Expression
-    -- }
   | EnumDeclaration
     { edType :: PTypes
     , edId :: Id
@@ -110,6 +108,7 @@ data Body
     { vdeType :: PTypes
     , vdeDeclarations :: [VariableDeclarator]
     , vdeKind :: PTypes
+    , vdeRange :: [PTypes]
     }
   deriving (Show)
 
@@ -342,7 +341,6 @@ data TSTypeAnnotation = TSTypeAnnotation
   , tsTypeAnnotation :: Maybe TypeAnnotation
   } deriving (Generic, Show)
 
- 
 
 data TypeAnnotation
   = TSTypeAnnotationAnnotation TSTypeAnnotation
@@ -353,7 +351,6 @@ data TypeAnnotation
     { trType :: PTypes
     , trTypeName :: Maybe Expression
     }
-    
   | TSTypeLiteral
     { tstType :: PTypes
     , tstMembers :: [Statement]
@@ -373,6 +370,11 @@ data TypeAnnotation
     { tsnType :: PTypes
     , tsnRange :: [PTypes]
     }
+  | TSTupleType
+    { ttsType :: PTypes
+    , ttsElementTypes :: [TypeAnnotation]
+    , ttsRange :: [PTypes]
+    }
   deriving (Generic, Show)
 
 
@@ -390,12 +392,12 @@ instance AT.FromJSON PTypes where
   parseJSON _             = fail "Invalid pTypes"
   
 instance AT.FromJSON Watcher where
-  parseJSON = AT.withObject "Program" $ \v ->
-    Watcher <$> v A..:? "type"
-            <*> v A..:? "body"
-            <*> v A..: "sourceType"
-            <*> v A..: "range"
-            <*> v A..:? "comments"
+  parseJSON (AT.Object v) =  Watcher
+                             <$> v A..: "type"
+                             <*> v A..: "body"
+                             <*> v A..: "sourceType"
+                             <*> v A..: "range"
+                             <*> v A..:? "comments"
 
 instance AT.FromJSON Comments where
   parseJSON (AT.Object v) = Comments
@@ -473,6 +475,7 @@ instance AT.FromJSON Body where
                                   <$> v A..: "type"
                                   <*> v A..: "declarations"
                                   <*> v A..: "kind"
+                                  <*> v A..: "range"
       
       
       "ClassDeclaration" -> fail "class declaration not allowed" 
@@ -716,6 +719,10 @@ instance AT.FromJSON TypeAnnotation where
       "TSNullKeyword" -> TSNullKeyword <$>
                        v A..: "type" <*>
                        v A..: "range"
+      "TSTupleType" -> TSTupleType <$>
+                       v A..: "type" <*>
+                       v A..: "elementTypes" <*>
+                       v A..: "range"
 
 
       "TSAnyKeyword"  -> error "any type not allowed"
@@ -806,11 +813,12 @@ instance AT.ToJSON Body where
               , "typeAnnotation" A..= talTypeAnn
               , "range" A..= telRange
               ]
-  toJSON (VariableDeclarationE vdeType vdeDec vdeKind ) =
-    AT.object [ "type" A..= ("TSTypeAliasDeclaration" :: T.Text)
+  toJSON (VariableDeclarationE vdeType vdeDec vdeKind vdeRange) =
+    AT.object [ "type" A..= ("VariableDeclaration" :: T.Text)
               , "type" A..= vdeType
               , "declarations" A..= vdeDec
               , "kind" A..= vdeKind
+              , "range" A..= vdeRange
               ]
 
 
@@ -1087,8 +1095,7 @@ instance AT.ToJSON TypeAnnotation where
               , "range" A..= tslRange
               ]
   toJSON (TSArrayType tsaType tsaElType tsaRange) =
-    AT.object [ "type" A..= AT.String "TSArrayType"
-              , "type" A..= tsaType
+    AT.object [ "type" A..= tsaType
               , "elementType" A..= tsaElType
               , "range" A..= tsaRange
               ]
@@ -1102,4 +1109,10 @@ instance AT.ToJSON TypeAnnotation where
     AT.object [ "type" A..= AT.String "TSNullKeyword"
               , "type" A..= tsnType
               , "range" A..= tsnRange
+              ]
+  toJSON (TSTupleType ttsType ttsElementTypes ttsRange) =
+    AT.object [ "type" A..= AT.String "TSTupleType"
+              , "type" A..= ttsType
+              , "elementTypes" A..= ttsElementTypes
+              , "range" A..= ttsRange
               ]
