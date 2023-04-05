@@ -10,10 +10,24 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@typescript-eslint/parser": "^5.52.0",
-    "@typescript-eslint/typescript-estree": "^5.52.0"
+    "@typescript-eslint/experimental-utils": "^5.54.0",
+    "@typescript-eslint/typescript-estree": "/home/pawel/Desktop/esLintCustom/typescript-eslint-custom",
+    "babel": "^6.23.0",
+    "escodegen": "^2.0.0",
+    "eslint-plugin-custom-rules": "^0.0.0",
+    "esprima": "^4.0.1",
+    "recast": "^0.22.0"
   },
   "devDependencies": {
-    "typescript": "^4.9.5"
+    "@babel/cli": "^7.21.0",
+    "@babel/core": "^7.21.0",
+    "@babel/generator": "^7.21.1",
+    "@babel/parser": "^7.21.2",
+    "@babel/preset-env": "^7.20.2",
+    "@babel/preset-typescript": "^7.21.0",
+    "@typescript-eslint/eslint-plugin": "/home/pawel/Desktop/esLintCustom/typescript-eslint-custom",
+    "@typescript-eslint/parser": "/home/pawel/Desktop/esLintCustom/typescript-eslint-custom",
+    "eslint": "^8.36.0",
+    "typescript": "/home/pawel/Desktop/esLintCustom/typescript"
   }
 }

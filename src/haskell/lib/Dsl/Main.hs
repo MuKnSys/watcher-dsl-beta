@@ -5,7 +5,8 @@ module Dsl.Main (main) where
 
 import qualified Dsl.NodeRunner as N
 import qualified Dsl.ParseNode as P
-import qualified Dsl.ConfigGenerator as CG 
+import qualified Dsl.ConfigGenerator as CG
+import qualified Dsl.ParserDefinition as PD
 import Prelude
 import System.Environment
 import Control.Exception
@@ -80,6 +81,23 @@ main = do
           putStrLn $ show $ tsWatcher
           P.generateDir testPathForGeneratedWatchers tsWatcher
           exitSuccess
-    ("test-watcher" : _) -> do
-      CG.configGenerator 
+    -- ("test-watcher" : _) -> do
+    --   CG.configGenerator
+
+    ("compile" : path : _ ) -> do 
+      putStrLn $ "Parsing example directory"
+      N.startNode path path
+      let watchLibDir = "/home/pawel/Desktop/watchers/watcher-ts"
+      P.forJsonDir (\(PD.FileName fn) pcw -> 
+                   case (FP.takeExtension fn) of
+                     ".json" -> do 
+                       let file = FP.dropExtension fn
+                           c = P.dslToWatcher path pcw file
+                           co = CG.CodeGeneratorCofnig
+                             { CG.tempFile = "/tmp/w.yaml"
+                             , CG.generatorPath = watchLibDir
+                             }
+                       CG.configGenerator co c
+                     _ -> return ()
+                      ) path
     _ -> putStrLn "unrecognized args"

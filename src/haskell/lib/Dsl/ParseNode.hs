@@ -22,6 +22,7 @@ import qualified Data.Aeson.Encode.Pretty as AP
 
 import System.Console.Pretty (Color (..), Style (..), bgColor, color, style, supportsPretty)
 import Dsl.ParserDefinition
+import Dsl.ConfigGenerator
 import GHC.Generics
 import System.Directory
 import qualified System.FilePath as FP
@@ -132,6 +133,44 @@ mapJsonDirectory path = do
           Right precompiledWatcher -> do
             return (TSFile fileName precompiledWatcher)
 
+dslToWatcher :: FilePath -> PreCompiledWatcher -> String -> Config
+dslToWatcher p pcw str =
+  let c =  Contract
+        { name = "ERC721"
+        , path = "/home/pawel/Desktop/watchers/watcher-ts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol"
+          --p ++ "/ERC721.sol"
+        , kind = "ERC721"
+        }
+  in Config 
+  { coContracts = [c]
+  , coOutputFolder = str
+  , coMode = "all"
+  , coKind = "active"
+  , coPort = 3009
+  , coFlatten = True
+  , coSubgraphPath = Nothing
+  }
+
+forJsonDir :: (FileName -> PreCompiledWatcher -> IO () ) -> FilePath -> IO ()
+forJsonDir f path = do
+  isDir <- (doesDirectoryExist path :: IO Bool)
+  if isDir
+    then do
+      contents <- (listDirectory path :: IO [FilePath])
+      mapM_ (\p -> forJsonDir f (path FP.</> p)) contents
+    else
+      if (FP.takeExtension path /= ".json")
+      then (
+        do let fileName = FileName (FP.takeFileName path)
+               fullPath = path
+           filcon <- readFile path
+           precompiledWatcher <- parse filcon
+           case precompiledWatcher of
+              Left str -> putStrLn str
+              Right precompiledWatcher -> do
+                   f fileName precompiledWatcher)
+      else (return ())
+
 generateCompiledWatcher :: TSast -> IO GeneratedWatcherCode
 generateCompiledWatcher (TSDirectory dirName contents) = do 
   newContents <- mapM generateCompiledWatcher contents
@@ -141,6 +180,21 @@ generateCompiledWatcher (TSFile fileName (PreCompiledWatcher watcher)) = do
   return (File fileName (CompiledWatcher encodeWatcher))
 generateCompiledWatcher (TSErr errorCode) = do
   return (Err errorCode)
+
+
+
+
+-- generateCompiledWatcher :: TSast -> IO ()
+-- generateCompiledWatcher (TSDirectory dirName contents) = do 
+--   newContents <- mapM generateCompiledWatcher contents
+--   return (Directory dirName newContents)
+-- generateCompiledWatcher (TSFile fileName (PreCompiledWatcher watcher)) = do
+--   let encodeWatcher = BSS.unpack $ A.encode $ watcher 
+--   return (File fileName (CompiledWatcher encodeWatcher))
+-- generateCompiledWatcher (TSErr errorCode) = do
+--   return (Err errorCode)
+
+
 
 
 

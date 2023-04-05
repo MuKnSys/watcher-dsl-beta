@@ -10,6 +10,7 @@ import System.Console.Pretty (Color (..), Style (..), bgColor, color, style, sup
 import qualified Data.Text as T
 
 
+
 jsonDir :: String
 jsonDir = "/tmp/parseTS.json"
 

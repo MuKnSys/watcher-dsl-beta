@@ -1,3 +1,4 @@
+{-# LANGUAGE NamedFieldPuns #-}
 module Dsl.ConfigGenerator where
 
 import Prelude 
@@ -23,6 +24,12 @@ data Config = Config
   , coFlatten :: Bool
   , coSubgraphPath :: Maybe String
   } deriving (Show)
+
+data CodeGeneratorCofnig = CodeGeneratorCofnig
+                         { tempFile :: FilePath
+                         , generatorPath :: FilePath
+                         } deriving (Show)
+
 
 instance Y.ToJSON Contract where
   toJSON (Contract coName coPath coKind) =
@@ -61,11 +68,15 @@ exampleConfig = Config
   , coSubgraphPath = Nothing
   }
 
-configGenerator :: IO ()
-configGenerator =
-  do
-    let path = "/home/pawel/Desktop/watchers/watcher-ts/packages/codegen/config.yaml"
-    yaml <- Y.encodeFile path exampleConfig
+configGenerator :: CodeGeneratorCofnig -> Config  -> IO ()
+configGenerator  conf c = do
+    -- let oPath = tempFile  --"/home/pawel/Desktop/watchers/watcher-ts/packages/codegen/config.yaml"
+        -- oFile = outPutFile
+    let path = generatorPath conf ++ "/packages/codegen"
+        com = "yarn codegen --config-file " ++ (tempFile conf)
+    yaml <- Y.encodeFile (tempFile conf)
+              (c {coOutputFolder = (generatorPath conf ++ "/packages/" ++ coOutputFolder c) })
+    SP.readCreateProcess (SP.shell com) {SP.cwd = Just path }[]
     putStrLn $ "done"
 
 
@@ -77,3 +88,4 @@ yarnRunner = do
   return ()
 
 --yarn codegen --config-file ./config.yaml
+

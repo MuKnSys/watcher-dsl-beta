@@ -1,6 +1,7 @@
 const { parse } = require('@typescript-eslint/parser');
 const fs = require('fs');
 const path = require('path');
+const replace = require('./replace');
 const phrasesToSearch = require('./replace').phrasesToSearch
 const inputdir = process.argv[2];
 const outputdir = process.argv[3];
@@ -28,6 +29,7 @@ function processFile(inputPath, outputPath) {
     phrasesToSearch.forEach(phrase => {
       replacedCode = replacedCode.replace(new RegExp(phrase.search, 'g'), phrase.replace);
     });
+    console.log(replacedCode)
     const ast = parse(replacedCode, parserOptions);
     fs.writeFileSync(outputPath, JSON.stringify(ast, null, 2));
   } catch (err) {
@@ -44,8 +46,8 @@ function processDirr(inputPath, outputPath) {
       let outputEntryPath = path.join(outputPath, entry.name);
       if (entry.isDirectory()) {
         processDirr(inputEntryPath, outputEntryPath);
-      } else {
-        let outputEntryPath = path.join(outputPath, entry.name.replace(/\.ts$/, '.json'));
+      } else if (entry.name.slice(-7) == "watcher"){
+        let outputEntryPath = path.join(outputPath, entry.name.replace(/\.watcher$/, '.json'));
         processFile(inputEntryPath, outputEntryPath);
       }
     }
