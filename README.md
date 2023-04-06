@@ -6,8 +6,8 @@ You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvy
 
 ## Dependencies
 
-npm
-* TypeScript
+[npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+* [TypeScript](https://www.npmjs.com/package/typescript)
 * [ESLint](https://www.npmjs.com/package/eslint)
 
 ## Examples
