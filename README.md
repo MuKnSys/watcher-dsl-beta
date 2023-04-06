@@ -1,5 +1,10 @@
 # watcher-dsl-beta
-## Instruction
+
+Watcher DSL is a domain specific language (DSL) designed to provide a well-structured, machine-readable, non-Turing complete environment for composing watchers and improving the developer experience.
+
+You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvyHVA-v0WEXEdTiFYO6q4) a more detailed specification of the DSL.
+
+## Instructions
 * As example use watcher from `data/example` folder
 * The contracts path currently had to be absolute. 
 * To build all haskell project dependencies go into: `/Desktop/watcher-dsl-beta/src/haskell` and run `cabal build all` command
@@ -7,10 +12,6 @@
 * example `./haskell "compile" /home/user/Desktop/watcher-dsl-beta/data/example /home/user/Desktop/watchers/watcher-ts`
 * watcher will appear in packages folder of watcher-ts library 
   
-A domain specific language (DSL) designed to provide a well-structured, machine-readable, non-Turing complete environment for composing watchers and improving the developer experience.
-
-You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvyHVA-v0WEXEdTiFYO6q4) a more detailed specification of the DSL.
-
 ## Dependencies
 
 * [Node JS / npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
