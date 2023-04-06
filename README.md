@@ -6,8 +6,9 @@ You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvy
 
 ## Dependencies
 
-* Haskell and Cabal
-* Node JS and npm
+* [Node JS / npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+* [Haskell](https://www.haskell.org/downloads)
+* [Cabal](https://www.haskell.org/cabal/)
 
 ## Examples
 
