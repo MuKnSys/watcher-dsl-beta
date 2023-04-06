@@ -18,6 +18,17 @@ You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvy
 
 ## Examples
 
+A domain specific language (DSL) designed to provide a well-structured, machine-readable, non-Turing complete environment for composing watchers and improving the developer experience.
+
+You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvyHVA-v0WEXEdTiFYO6q4) a more detailed specification of the DSL.
+
+## Dependencies
+
+* [Node JS / npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+* [Haskell](https://www.haskell.org/downloads)
+* [Cabal](https://www.haskell.org/cabal/)
+
+## Examples
 
 #### preview:
  27-03-23 
@@ -40,5 +51,3 @@ You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvy
  
 
 https://user-images.githubusercontent.com/76069115/220672066-92fb5bc3-f413-4769-82f2-71677e5fa80a.mp4
-
-
