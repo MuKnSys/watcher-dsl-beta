@@ -1,5 +1,6 @@
 # watcher-dsl-beta
 ## Instruction
+* As example use watcher from `data/example` folder
 * The contracts path currently had to be absolute. 
 * To build all haskell project dependencies go into: `/Desktop/watcher-dsl-beta/src/haskell` and run `cabal build all` command
 * After this you can run command from `watcher-dsl-beta/src/haskell/dist-newstyle/build/x86_64-linux/ghc-9.2.4/haskell-0.1.0.0/x/haskell/build/haskell`
