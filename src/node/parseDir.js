@@ -46,9 +46,11 @@ function processDirr(inputPath, outputPath) {
       let outputEntryPath = path.join(outputPath, entry.name);
       if (entry.isDirectory()) {
         processDirr(inputEntryPath, outputEntryPath);
-      } else if (entry.name.slice(-7) == "watcher"){
-        let outputEntryPath = path.join(outputPath, entry.name.replace(/\.watcher$/, '.json'));
-        processFile(inputEntryPath, outputEntryPath);
+      } else{
+          if(entry.name.slice(-7) == "watcher"){
+          let outputEntryPath = path.join(outputPath, entry.name.replace(/\.watcher$/, '.json'));
+          processFile(inputEntryPath, outputEntryPath);
+        }
       }
     }
   } catch (err) {

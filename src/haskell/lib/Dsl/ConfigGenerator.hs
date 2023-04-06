@@ -74,18 +74,14 @@ configGenerator  conf c = do
         -- oFile = outPutFile
     let path = generatorPath conf ++ "/packages/codegen"
         com = "yarn codegen --config-file " ++ (tempFile conf)
+    putStrLn $ tempFile conf
     yaml <- Y.encodeFile (tempFile conf)
               (c {coOutputFolder = (generatorPath conf ++ "/packages/" ++ coOutputFolder c) })
     SP.readCreateProcess (SP.shell com) {SP.cwd = Just path }[]
     putStrLn $ "done"
 
 
-yarnRunner :: IO () --move other module
-yarnRunner = do
-  let path = "/home/pawel/Desktop/watchers/watcher-ts/packages/codegen"
-      com = "yarn codegen --config-file " ++ path ++ "/config.yaml"
-  yarnProcess <- SP.readCreateProcess (SP.shell com ) {SP.cwd = Just path }[]
-  return ()
+
 
 --yarn codegen --config-file ./config.yaml
 

@@ -84,20 +84,23 @@ main = do
     -- ("test-watcher" : _) -> do
     --   CG.configGenerator
 
-    ("compile" : path : _ ) -> do 
+    ("compile" : path : pathToLib : _ ) -> do 
       putStrLn $ "Parsing example directory"
       N.startNode path path
-      let watchLibDir = "/home/pawel/Desktop/watchers/watcher-ts"
       P.forJsonDir (\(PD.FileName fn) pcw -> 
                    case (FP.takeExtension fn) of
-                     ".json" -> do 
+                     ".json" -> do
                        let file = FP.dropExtension fn
                            c = P.dslToWatcher path pcw file
                            co = CG.CodeGeneratorCofnig
                              { CG.tempFile = "/tmp/w.yaml"
-                             , CG.generatorPath = watchLibDir
+                             , CG.generatorPath = pathToLib
                              }
-                       CG.configGenerator co c
+                       case c of
+                         Right c -> do
+                           CG.configGenerator co c
+                         Left er ->  putStrLn er
+
                      _ -> return ()
                       ) path
     _ -> putStrLn "unrecognized args"

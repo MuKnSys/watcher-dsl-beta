@@ -4,7 +4,7 @@ module.exports = {
         { search: /fetch/g, replace: 'function FETCH$1' },
         { search: /process function (\w+)/g, replace: 'function PROCESS$1' },
         { search: /serve function (\w+)/g, replace: 'function SERVE$1' },
-        { search: /request (\w+)/g, replace: 'function REQUEST$1' },
+        { search: /request (\w+)/g, replace: 'function ENDPOINT$1' },
         { search: /process (\w+)/g, replace: 'function PROCESS$1' },
         { search: /import (contract) (\w+)\.(\w+)\.(\w+) from "([^"]+)";/g, replace: 'import {$1, $2$3$4} from "$5";' },
         { search: /import (config)(\w+)\ from "([^"]+)";/g, replace: 'import {$1 , $2} from "$3";' },

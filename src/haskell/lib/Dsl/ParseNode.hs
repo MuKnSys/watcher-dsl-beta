@@ -10,7 +10,9 @@
 
 module Dsl.ParseNode where
 
-import Prelude 
+import Prelude
+import Data.Maybe
+import Data.List
 import qualified Data.Aeson as A
 import qualified Data.ByteString.Char8 as BS
 import qualified Data.ByteString.Lazy.Char8 as BSS
@@ -76,7 +78,6 @@ exampleDirr = "/home/pawel/Desktop/watcher-dsl-beta/data"
 --       return (Right (CompiledWatcher watcher))
 
 
-
 parse :: String -> IO (Either String PreCompiledWatcher)
 parse astToParse  = do
   let styleFailMessage = color Red . style Bold
@@ -89,6 +90,7 @@ parse astToParse  = do
       putStrLn (styleFailInfo err)
       return (Left err)
     Right watcher -> do
+      putStrLn $ show $ watcher
       putStrLn (styleOK "Watcher code parsed without errors")
       return (Right (PreCompiledWatcher watcher))
 
@@ -131,25 +133,98 @@ mapJsonDirectory path = do
       case precompiledWatcher of
           Left str -> return (TSErr "error")
           Right precompiledWatcher -> do
+            let imp = getImports precompiledWatcher
             return (TSFile fileName precompiledWatcher)
 
-dslToWatcher :: FilePath -> PreCompiledWatcher -> String -> Config
+
+
+
+getImports :: PreCompiledWatcher -> [String]
+getImports (PreCompiledWatcher (Watcher _ pBody _ _ _)  ) =
+  mapMaybe importView pBody
+getImports _ = error $ "imports not found"
+
+
+
+importView :: Body -> Maybe String
+importView (ImportDeclaration _ (Literal _ (PString x)  _ _) _ _ _ _ ) = Just x
+importView _ = Nothing
+
+
+endPointView :: Body -> Maybe String
+endPointView  (FunctionDeclaration _ (Id _ (PString x)  _ ) _ _ _ _ _ _)  = 
+  let boo = isInfixOf "ENDPOINT" x
+  in if boo == True
+     then Just x
+     else Nothing
+endPointView _ = Nothing
+
+getEndpoint :: PreCompiledWatcher -> [String]
+getEndpoint (PreCompiledWatcher (Watcher _ pBody _ _ _)  ) =
+  mapMaybe endPointView pBody
+getEndpoint _ = error $ "endpoint  not found"
+
+
+
+fetchView :: Body -> Maybe String
+fetchView  (FunctionDeclaration _ (Id _ (PString x)  _ ) _ _ _ _ _ _)  = 
+  let boo = isInfixOf "FETCH " x
+  in if boo == True
+     then Just x
+     else Nothing
+fetchView _ = Nothing
+
+getFetch :: PreCompiledWatcher -> [String]
+getFetch (PreCompiledWatcher (Watcher _ pBody _ _ _)  ) =
+  mapMaybe fetchView pBody
+getFetch _ = error $ "fetch not found"
+
+
+processView :: Body -> Maybe String
+processView  (FunctionDeclaration _ (Id _ (PString x)  _ ) _ _ _ _ _ _)  = 
+  let boo = isInfixOf "PROCESS" x
+  in if boo == True
+     then Just x
+     else Nothing
+processView _ = Nothing
+
+getProcess :: PreCompiledWatcher -> [String]
+getProcess (PreCompiledWatcher (Watcher _ pBody _ _ _)  ) =
+  mapMaybe processView pBody
+getProcess _ = error $ "process not found"
+
+
+
+
+dslToWatcher :: FilePath -> PreCompiledWatcher -> String -> Either String Config
 dslToWatcher p pcw str =
-  let c =  Contract
-        { name = "ERC721"
-        , path = "/home/pawel/Desktop/watchers/watcher-ts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol"
-          --p ++ "/ERC721.sol"
-        , kind = "ERC721"
-        }
-  in Config 
-  { coContracts = [c]
-  , coOutputFolder = str
-  , coMode = "all"
-  , coKind = "active"
-  , coPort = 3009
-  , coFlatten = True
-  , coSubgraphPath = Nothing
-  }
+  let imp = getImports $ pcw
+      end = getEndpoint $ pcw
+      proce = getProcess $ pcw
+      fetch = getFetch $ pcw
+  in
+    case (imp, end , proce, fetch) of
+     ([x],_,[],[]) ->
+       let c =  Contract
+             { name = "ERC20"
+             , path = x
+             , kind = "ERC20"
+             }
+       in Right $ Config 
+          { coContracts = [c]
+          , coOutputFolder = str
+          , coMode = "all"
+          , coKind = "active"
+          , coPort = 3009
+          , coFlatten = True
+          , coSubgraphPath = Nothing
+          }
+     ([], _ , _ , _) -> Left "at least one contract heve to be imported"
+     ( _, _ , _ , _ : _) -> Left "fetch not implemented"
+     ( _, _ , _ : _ , _) -> Left "process not implemented"
+     _ -> Left "Not implemented"
+  
+
 
 forJsonDir :: (FileName -> PreCompiledWatcher -> IO () ) -> FilePath -> IO ()
 forJsonDir f path = do
@@ -159,7 +234,7 @@ forJsonDir f path = do
       contents <- (listDirectory path :: IO [FilePath])
       mapM_ (\p -> forJsonDir f (path FP.</> p)) contents
     else
-      if (FP.takeExtension path /= ".json")
+      if (FP.takeExtension path == ".json")
       then (
         do let fileName = FileName (FP.takeFileName path)
                fullPath = path
@@ -168,6 +243,7 @@ forJsonDir f path = do
            case precompiledWatcher of
               Left str -> putStrLn str
               Right precompiledWatcher -> do
+                   let imp = getImports precompiledWatcher
                    f fileName precompiledWatcher)
       else (return ())
 
