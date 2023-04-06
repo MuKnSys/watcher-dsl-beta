@@ -18,7 +18,7 @@ You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvy
 * [Haskell](https://www.haskell.org/downloads)
 * [Cabal](https://www.haskell.org/cabal/)
 
-## Examples
+## Previous Examples
 
 #### preview:
  27-03-23 
