@@ -5,7 +5,7 @@ Watcher DSL is a domain specific language (DSL) designed to provide a well-struc
 You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvyHVA-v0WEXEdTiFYO6q4) a more detailed specification of the DSL.
 
 ## Instructions
-* As example use watcher from `data/example` folder
+* As example use the watcher from `data/example` folder
 * The contracts path currently had to be absolute. 
 * To build all haskell project dependencies go into: `/Desktop/watcher-dsl-beta/src/haskell` and run `cabal build all` command
 * After this you can run command from `watcher-dsl-beta/src/haskell/dist-newstyle/build/x86_64-linux/ghc-9.2.4/haskell-0.1.0.0/x/haskell/build/haskell`
