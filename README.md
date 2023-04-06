@@ -1,8 +1,12 @@
 # watcher-dsl-beta
 
-*[DSL SPECIFICATION](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvyHVA-v0WEXEdTiFYO6q4)*
+A domain specific language (DSL) designed to provide a well-structured, machine-readable, non-Turing complete environment for composing watchers and improving the developer experience.
 
-A repository for domain specific language
+You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvyHVA-v0WEXEdTiFYO6q4) a more detailed specification of the DSL.
+
+## Examples
+
+
 #### preview:
  27-03-23 
  [![Demo](https://i.imgur.com/pqrbpWp.png)](https://vimeo.com/810525901) 
