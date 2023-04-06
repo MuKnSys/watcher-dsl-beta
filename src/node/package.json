@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@typescript-eslint/experimental-utils": "^5.54.0",
-    "@typescript-eslint/typescript-estree": "/home/pawel/Desktop/esLintCustom/typescript-eslint-custom",
+    "@typescript-eslint/typescript-estree": "^5.52.0",
     "babel": "^6.23.0",
     "escodegen": "^2.0.0",
     "eslint-plugin-custom-rules": "^0.0.0",
@@ -25,9 +25,9 @@
     "@babel/parser": "^7.21.2",
     "@babel/preset-env": "^7.20.2",
     "@babel/preset-typescript": "^7.21.0",
-    "@typescript-eslint/eslint-plugin": "/home/pawel/Desktop/esLintCustom/typescript-eslint-custom",
-    "@typescript-eslint/parser": "/home/pawel/Desktop/esLintCustom/typescript-eslint-custom",
+    "@typescript-eslint/eslint-plugin": "^5.52.0",
+    "@typescript-eslint/parser": "^5.52.0",
     "eslint": "^8.36.0",
-    "typescript": "/home/pawel/Desktop/esLintCustom/typescript"
+    "typescript": "^4.9.5"
   }
 }

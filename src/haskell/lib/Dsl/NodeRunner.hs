@@ -50,7 +50,7 @@ parseTS content = do
   let com = "node ../node/parseToTs.js " ++ show content
   putStrLn $ "Code in the node process "
   putStrLn $ content
-  code <- readCreateProcess (shell com) {cwd = Just "/home/pawel/Desktop/watcher-dsl-beta/src/node"} []
+  code <- readCreateProcess (shell com) {cwd = Just "~/Desktop/watcher-dsl-beta/src/node"} []
   return code
   
   

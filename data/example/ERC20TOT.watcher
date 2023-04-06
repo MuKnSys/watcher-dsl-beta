@@ -1,7 +1,7 @@
 // This watcher is responsible for querying the total supply of an ERC20 token.
 
 // Import the necessary contract interface
-import contract ERC20.Call.getTotalSupply from "/home/pawel/Desktop/watchers/watcher-ts/node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import contract ERC20.Call.getTotalSupply from "path/to/change/";
 
 
 // Define Config type
