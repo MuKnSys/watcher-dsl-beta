@@ -7,6 +7,7 @@ import Prelude
 import Control.Exception
 import System.Exit 
 import System.Console.Pretty (Color (..), Style (..), bgColor, color, style, supportsPretty)
+import qualified System.Directory as SD
 import qualified Data.Text as T
 --import 
 
@@ -31,11 +32,11 @@ jsonDir = "/tmp/parseTS.json"
 
 testDir = "/home/pawel/Desktop/watcher-dsl-beta/data/generatedJsonDirector"
 
-startNode :: String -> String -> IO(Either String String)
-startNode dir outputDir  = do
+startNode :: String -> String -> String -> IO(Either String String)
+startNode dir outputDir nodeDir  = do
   putStrLn "Running node process..."
   let com = "node ../node/parseDir.js  "++ dir ++ " " ++ outputDir
-  output <- try $ readCreateProcess (shell com) {cwd = Just "~/Desktop/watcher-dsl-beta/src/node"} []
+  output <- try $ readCreateProcess (shell com) {cwd = Just nodeDir } []
   case output of
     Left (e :: SomeException) -> do
       let errMsg = "Error running Node.js process: " ++ color Red (show e)

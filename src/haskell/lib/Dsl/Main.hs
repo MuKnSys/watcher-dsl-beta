@@ -42,8 +42,8 @@ testPathForTSAST = "/home/pawel/Desktop/watcher-dsl-beta/data/directoryForTestRu
 testPathForGeneratedWatchers :: FilePath
 testPathForGeneratedWatchers = "/home/pawel/Desktop/watcher-dsl-beta/data/directoryForTestRun/generatedWatcherCode"
 
-
-
+testNodePath :: FilePath
+testNodePath = "/home/pawel/Desktop/watcher-dsl-beta/src/node"
 
 main :: IO ()
 main = do
@@ -55,7 +55,7 @@ main = do
           pathForTSAST  = FP.joinPath $ (init pathEl ++ ["tsAST"])
           pathForWatcher = FP.joinPath $ (init pathEl ++ ["generatedWatcher"])
       putStrLn $ "Parsing " ++ show filesDir
-      nodeRes <- N.startNode filesDir pathForTSAST
+      nodeRes <- N.startNode filesDir pathForTSAST testNodePath
       case nodeRes of
         Left errMsg -> do
           putStrLn (styleFail errMsg)
@@ -68,7 +68,7 @@ main = do
           exitSuccess
     ("test" : _ ) -> do 
       putStrLn $ "Parsing example directory"
-      nodeRes <- N.startNode testWatchersPath testPathForTSAST
+      nodeRes <- N.startNode testWatchersPath testPathForTSAST testNodePath
       case nodeRes of
         Left errMsg -> do
           putStrLn (styleFail errMsg)
@@ -84,9 +84,10 @@ main = do
     -- ("test-watcher" : _) -> do
     --   CG.configGenerator
 
-    ("compile" : path : pathToLib : _ ) -> do 
+
+    ("compile" : path : pathToLib : pathToNode : _ ) -> do 
       putStrLn $ "Parsing example directory"
-      N.startNode path path
+      N.startNode path path pathToNode
       P.forJsonDir (\(PD.FileName fn) pcw -> 
                    case (FP.takeExtension fn) of
                      ".json" -> do
