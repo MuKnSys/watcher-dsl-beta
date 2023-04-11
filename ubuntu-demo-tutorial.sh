@@ -1,4 +1,4 @@
-t clone https://github.com/MuKnSys/watcher-dsl-beta
+git clone https://github.com/MuKnSys/watcher-dsl-beta
 
 cd watcher-dsl-beta/src/haskell
 
