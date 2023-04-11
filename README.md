@@ -15,6 +15,11 @@ You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvy
     * Path to node directory in watcher-dsl-beta project.
 * example `./haskell "compile" /home/user/Desktop/watcher-dsl-beta/data/example /home/user/Desktop/watchers/watcher-ts /home/user/Desktop/watcher-dsl-beta/src/node/`
 * watcher will appear in packages folder of watcher-ts library 
+## Hardware Requirements 
+* CPU: 64-bit, 2.5 GHz.
+* RAM: Minimum 4 GB of RAM, but 8 GB or more recommended
+* Storage: At least 20 GB of free disk space recommended.
+* OS: Windows, macOS or Linux.
 
 ## Dependencies
 
