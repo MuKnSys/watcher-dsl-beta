@@ -25,7 +25,7 @@ You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvy
 ## Dependencies
 
 * [Node JS / npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
-* [Haskell](https://www.haskell.org/downloads)
+* [Haskell](https://get-ghcup.haskell.org/)
 * [Cabal](https://www.haskell.org/cabal/)
 
 ## Previous Examples
