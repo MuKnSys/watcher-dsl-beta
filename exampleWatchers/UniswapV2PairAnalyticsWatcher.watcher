@@ -1,0 +1,54 @@
+// This watcher is responsible for performing various financial analysis functions on the price of a Uniswap V2 pair.
+// It imports the required contract interface, the configuration, and a timeseries module to calculate
+// the current price, percentage change, moving average, and standard deviation.
+// It defines a process function to calculate the price and four request functions for each type of analysis.
+
+import config Config from "./config";
+// This is example of importing built in module, few suxh modules will be providded together with mature DSL implementation.
+// in general improting of user written modules is not permited, but they can be developed by users who are WELL AWARE
+// of internals of DSL compiler and watcher eccosystem
+import module Timeseries from "./timeseries";
+import contract IUniswapV2Pair.Call.getReserves from "https://contracts.example.com/UniswapV2Pair.sol";
+
+
+config Config {
+  contractAddress: string;
+  percentageChangeBlocks: number;
+  movingAverageBlocks: number;
+  standardDeviationBlocks: number;
+}
+
+
+process calculatePrice() {
+  const reserves = IUniswapV2Pair.at(config.contractAddress).Call.getReserves();
+  const price = reserves.reserve0 / reserves.reserve1;
+  store { price };
+}
+
+
+request getCurrentPrice() {
+  const currentPrice = load("*");
+  respond { price: currentPrice.price };
+}
+
+
+request getPercentageChange() {
+  const currentPrice = load("*");
+  const oldPrice = load(`blockNumber <= currentBlock - ${config.percentageChangeBlocks}`);
+  const percentageChange = (currentPrice.price - oldPrice.price) / oldPrice.price * 100;
+  respond { percentageChange };
+}
+
+
+request getMovingAverage() {
+  const prices = load(`blockNumber >= currentBlock - ${config.movingAverageBlocks}`);
+  const movingAverage = Timeseries.calculateMovingAverage(prices, config.movingAverageBlocks);
+  respond { movingAverage };
+}
+
+
+request getStandardDeviation() {
+  const prices = load(`blockNumber >= currentBlock - ${config.standardDeviationBlocks}`);
+  const standardDeviation = Timeseries.calculateStandardDeviation(prices, config.standardDeviationBlocks);
+  respond { standardDeviation };
+}

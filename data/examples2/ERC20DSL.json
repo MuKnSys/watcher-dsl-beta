@@ -1,0 +1,805 @@
+{
+  "type": "Program",
+  "body": [
+    {
+      "type": "ImportDeclaration",
+      "source": {
+        "type": "Literal",
+        "value": "https://some-contract-url.example",
+        "raw": "\"https://some-contract-url.example\"",
+        "range": [
+          353,
+          388
+        ]
+      },
+      "specifiers": [
+        {
+          "type": "ImportSpecifier",
+          "local": {
+            "type": "Identifier",
+            "name": "contract",
+            "range": [
+              318,
+              326
+            ]
+          },
+          "imported": {
+            "type": "Identifier",
+            "name": "contract",
+            "range": [
+              318,
+              326
+            ]
+          },
+          "importKind": "value",
+          "range": [
+            318,
+            326
+          ]
+        },
+        {
+          "type": "ImportSpecifier",
+          "local": {
+            "type": "Identifier",
+            "name": "ERC20CallbalanceOf",
+            "range": [
+              328,
+              346
+            ]
+          },
+          "imported": {
+            "type": "Identifier",
+            "name": "ERC20CallbalanceOf",
+            "range": [
+              328,
+              346
+            ]
+          },
+          "importKind": "value",
+          "range": [
+            328,
+            346
+          ]
+        }
+      ],
+      "importKind": "value",
+      "assertions": [],
+      "range": [
+        310,
+        389
+      ]
+    },
+    {
+      "type": "ImportDeclaration",
+      "source": {
+        "type": "Literal",
+        "value": "./config",
+        "raw": "\"./config\"",
+        "range": [
+          413,
+          423
+        ]
+      },
+      "specifiers": [
+        {
+          "type": "ImportSpecifier",
+          "local": {
+            "type": "Identifier",
+            "name": "Config",
+            "range": [
+              399,
+              405
+            ]
+          },
+          "imported": {
+            "type": "Identifier",
+            "name": "Config",
+            "range": [
+              399,
+              405
+            ]
+          },
+          "importKind": "value",
+          "range": [
+            399,
+            405
+          ]
+        }
+      ],
+      "importKind": "value",
+      "assertions": [],
+      "range": [
+        390,
+        424
+      ]
+    },
+    {
+      "type": "TSTypeAliasDeclaration",
+      "id": {
+        "type": "Identifier",
+        "name": "Holder",
+        "range": [
+          431,
+          437
+        ]
+      },
+      "typeAnnotation": {
+        "type": "TSTypeLiteral",
+        "members": [
+          {
+            "type": "TSPropertySignature",
+            "computed": false,
+            "key": {
+              "type": "Identifier",
+              "name": "address",
+              "range": [
+                446,
+                453
+              ]
+            },
+            "typeAnnotation": {
+              "type": "TSTypeAnnotation",
+              "range": [
+                453,
+                461
+              ],
+              "typeAnnotation": {
+                "type": "TSStringKeyword",
+                "range": [
+                  455,
+                  461
+                ]
+              }
+            },
+            "range": [
+              446,
+              462
+            ]
+          },
+          {
+            "type": "TSPropertySignature",
+            "computed": false,
+            "key": {
+              "type": "Identifier",
+              "name": "balance",
+              "range": [
+                467,
+                474
+              ]
+            },
+            "typeAnnotation": {
+              "type": "TSTypeAnnotation",
+              "range": [
+                474,
+                482
+              ],
+              "typeAnnotation": {
+                "type": "TSNumberKeyword",
+                "range": [
+                  476,
+                  482
+                ]
+              }
+            },
+            "range": [
+              467,
+              483
+            ]
+          }
+        ],
+        "range": [
+          440,
+          485
+        ]
+      },
+      "range": [
+        426,
+        486
+      ]
+    },
+    {
+      "type": "TSTypeAliasDeclaration",
+      "id": {
+        "type": "Identifier",
+        "name": "Holders",
+        "range": [
+          492,
+          499
+        ]
+      },
+      "typeAnnotation": {
+        "type": "TSTypeLiteral",
+        "members": [
+          {
+            "type": "TSPropertySignature",
+            "computed": false,
+            "key": {
+              "type": "Identifier",
+              "name": "holders",
+              "range": [
+                508,
+                515
+              ]
+            },
+            "typeAnnotation": {
+              "type": "TSTypeAnnotation",
+              "range": [
+                515,
+                525
+              ],
+              "typeAnnotation": {
+                "type": "TSArrayType",
+                "elementType": {
+                  "type": "TSTypeReference",
+                  "typeName": {
+                    "type": "Identifier",
+                    "name": "Holder",
+                    "range": [
+                      517,
+                      523
+                    ]
+                  },
+                  "range": [
+                    517,
+                    523
+                  ]
+                },
+                "range": [
+                  517,
+                  525
+                ]
+              }
+            },
+            "range": [
+              508,
+              526
+            ]
+          }
+        ],
+        "range": [
+          502,
+          528
+        ]
+      },
+      "range": [
+        487,
+        529
+      ]
+    },
+    {
+      "type": "FunctionDeclaration",
+      "id": {
+        "type": "Identifier",
+        "name": "filterHoldersByBalance",
+        "range": [
+          540,
+          562
+        ]
+      },
+      "generator": false,
+      "expression": false,
+      "async": false,
+      "params": [
+        {
+          "type": "Identifier",
+          "name": "address",
+          "range": [
+            563,
+            578
+          ],
+          "typeAnnotation": {
+            "type": "TSTypeAnnotation",
+            "range": [
+              570,
+              578
+            ],
+            "typeAnnotation": {
+              "type": "TSStringKeyword",
+              "range": [
+                572,
+                578
+              ]
+            }
+          }
+        },
+        {
+          "type": "Identifier",
+          "name": "tokens",
+          "range": [
+            580,
+            594
+          ],
+          "typeAnnotation": {
+            "type": "TSTypeAnnotation",
+            "range": [
+              586,
+              594
+            ],
+            "typeAnnotation": {
+              "type": "TSNumberKeyword",
+              "range": [
+                588,
+                594
+              ]
+            }
+          }
+        }
+      ],
+      "body": {
+        "type": "BlockStatement",
+        "body": [
+          {
+            "type": "VariableDeclaration",
+            "declarations": [
+              {
+                "type": "VariableDeclarator",
+                "id": {
+                  "type": "Identifier",
+                  "name": "balance",
+                  "range": [
+                    623,
+                    630
+                  ]
+                },
+                "init": {
+                  "type": "CallExpression",
+                  "callee": {
+                    "type": "MemberExpression",
+                    "object": {
+                      "type": "CallExpression",
+                      "callee": {
+                        "type": "MemberExpression",
+                        "object": {
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "CallExpression",
+                            "callee": {
+                              "type": "MemberExpression",
+                              "object": {
+                                "type": "Identifier",
+                                "name": "ERC20",
+                                "range": [
+                                  633,
+                                  638
+                                ]
+                              },
+                              "property": {
+                                "type": "Identifier",
+                                "name": "at",
+                                "range": [
+                                  639,
+                                  641
+                                ]
+                              },
+                              "computed": false,
+                              "optional": false,
+                              "range": [
+                                633,
+                                641
+                              ]
+                            },
+                            "arguments": [
+                              {
+                                "type": "MemberExpression",
+                                "object": {
+                                  "type": "Identifier",
+                                  "name": "Config",
+                                  "range": [
+                                    642,
+                                    648
+                                  ]
+                                },
+                                "property": {
+                                  "type": "Identifier",
+                                  "name": "contractAddress",
+                                  "range": [
+                                    649,
+                                    664
+                                  ]
+                                },
+                                "computed": false,
+                                "optional": false,
+                                "range": [
+                                  642,
+                                  664
+                                ]
+                              }
+                            ],
+                            "optional": false,
+                            "range": [
+                              633,
+                              665
+                            ]
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "Call",
+                            "range": [
+                              666,
+                              670
+                            ]
+                          },
+                          "computed": false,
+                          "optional": false,
+                          "range": [
+                            633,
+                            670
+                          ]
+                        },
+                        "property": {
+                          "type": "Identifier",
+                          "name": "balanceOf",
+                          "range": [
+                            671,
+                            680
+                          ]
+                        },
+                        "computed": false,
+                        "optional": false,
+                        "range": [
+                          633,
+                          680
+                        ]
+                      },
+                      "arguments": [
+                        {
+                          "type": "Identifier",
+                          "name": "address",
+                          "range": [
+                            681,
+                            688
+                          ]
+                        }
+                      ],
+                      "optional": false,
+                      "range": [
+                        633,
+                        689
+                      ]
+                    },
+                    "property": {
+                      "type": "Identifier",
+                      "name": "get",
+                      "range": [
+                        690,
+                        693
+                      ]
+                    },
+                    "computed": false,
+                    "optional": false,
+                    "range": [
+                      633,
+                      693
+                    ]
+                  },
+                  "arguments": [],
+                  "optional": false,
+                  "range": [
+                    633,
+                    695
+                  ]
+                },
+                "range": [
+                  623,
+                  695
+                ]
+              }
+            ],
+            "kind": "const",
+            "range": [
+              617,
+              696
+            ]
+          },
+          {
+            "type": "IfStatement",
+            "test": {
+              "type": "BinaryExpression",
+              "operator": ">",
+              "left": {
+                "type": "Identifier",
+                "name": "balance",
+                "range": [
+                  706,
+                  713
+                ]
+              },
+              "right": {
+                "type": "Identifier",
+                "name": "tokens",
+                "range": [
+                  716,
+                  722
+                ]
+              },
+              "range": [
+                706,
+                722
+              ]
+            },
+            "consequent": {
+              "type": "BlockStatement",
+              "body": [
+                {
+                  "type": "VariableDeclaration",
+                  "declarations": [
+                    {
+                      "type": "VariableDeclarator",
+                      "id": {
+                        "type": "Identifier",
+                        "name": "holder",
+                        "range": [
+                          740,
+                          754
+                        ],
+                        "typeAnnotation": {
+                          "type": "TSTypeAnnotation",
+                          "range": [
+                            746,
+                            754
+                          ],
+                          "typeAnnotation": {
+                            "type": "TSTypeReference",
+                            "typeName": {
+                              "type": "Identifier",
+                              "name": "Holder",
+                              "range": [
+                                748,
+                                754
+                              ]
+                            },
+                            "range": [
+                              748,
+                              754
+                            ]
+                          }
+                        }
+                      },
+                      "init": {
+                        "type": "ObjectExpression",
+                        "properties": [
+                          {
+                            "type": "Property",
+                            "key": {
+                              "type": "Identifier",
+                              "name": "address",
+                              "range": [
+                                759,
+                                766
+                              ]
+                            },
+                            "value": {
+                              "type": "Identifier",
+                              "name": "address",
+                              "range": [
+                                759,
+                                766
+                              ]
+                            },
+                            "computed": false,
+                            "method": false,
+                            "shorthand": true,
+                            "kind": "init",
+                            "range": [
+                              759,
+                              766
+                            ]
+                          },
+                          {
+                            "type": "Property",
+                            "key": {
+                              "type": "Identifier",
+                              "name": "balance",
+                              "range": [
+                                768,
+                                775
+                              ]
+                            },
+                            "value": {
+                              "type": "Identifier",
+                              "name": "balance",
+                              "range": [
+                                768,
+                                775
+                              ]
+                            },
+                            "computed": false,
+                            "method": false,
+                            "shorthand": true,
+                            "kind": "init",
+                            "range": [
+                              768,
+                              775
+                            ]
+                          }
+                        ],
+                        "range": [
+                          757,
+                          777
+                        ]
+                      },
+                      "range": [
+                        740,
+                        777
+                      ]
+                    }
+                  ],
+                  "kind": "const",
+                  "range": [
+                    734,
+                    778
+                  ]
+                },
+                {
+                  "type": "ReturnStatement",
+                  "argument": {
+                    "type": "Identifier",
+                    "name": "holder",
+                    "range": [
+                      794,
+                      800
+                    ]
+                  },
+                  "range": [
+                    787,
+                    801
+                  ]
+                }
+              ],
+              "range": [
+                724,
+                807
+              ]
+            },
+            "alternate": null,
+            "range": [
+              702,
+              807
+            ]
+          },
+          {
+            "type": "ReturnStatement",
+            "argument": {
+              "type": "Literal",
+              "value": null,
+              "raw": "null",
+              "range": [
+                819,
+                823
+              ]
+            },
+            "range": [
+              812,
+              824
+            ]
+          }
+        ],
+        "range": [
+          611,
+          826
+        ]
+      },
+      "range": [
+        531,
+        826
+      ],
+      "returnType": {
+        "type": "TSTypeAnnotation",
+        "range": [
+          595,
+          610
+        ],
+        "typeAnnotation": {
+          "type": "TSUnionType",
+          "types": [
+            {
+              "type": "TSTypeReference",
+              "typeName": {
+                "type": "Identifier",
+                "name": "Holder",
+                "range": [
+                  597,
+                  603
+                ]
+              },
+              "range": [
+                597,
+                603
+              ]
+            },
+            {
+              "type": "TSNullKeyword",
+              "range": [
+                606,
+                610
+              ]
+            }
+          ],
+          "range": [
+            597,
+            610
+          ]
+        }
+      }
+    }
+  ],
+  "sourceType": "module",
+  "range": [
+    310,
+    827
+  ],
+  "comments": [
+    {
+      "type": "Line",
+      "value": " This watcher is from the a predefined list of adresses, is function FETCH$1ing the list of holders",
+      "range": [
+        0,
+        101
+      ],
+      "loc": {
+        "start": {
+          "line": 1,
+          "column": 0
+        },
+        "end": {
+          "line": 1,
+          "column": 101
+        }
+      }
+    },
+    {
+      "type": "Line",
+      "value": " of an ERC20 token that have a balance greater than a specified amount.",
+      "range": [
+        102,
+        175
+      ],
+      "loc": {
+        "start": {
+          "line": 2,
+          "column": 0
+        },
+        "end": {
+          "line": 2,
+          "column": 73
+        }
+      }
+    },
+    {
+      "type": "Line",
+      "value": " It imports the required contract interface and defines a function REQUESTfunction",
+      "range": [
+        176,
+        260
+      ],
+      "loc": {
+        "start": {
+          "line": 3,
+          "column": 0
+        },
+        "end": {
+          "line": 3,
+          "column": 84
+        }
+      }
+    },
+    {
+      "type": "Line",
+      "value": " to filter and function FETCHthe holder list.",
+      "range": [
+        261,
+        308
+      ],
+      "loc": {
+        "start": {
+          "line": 4,
+          "column": 0
+        },
+        "end": {
+          "line": 4,
+          "column": 47
+        }
+      }
+    }
+  ]
+}

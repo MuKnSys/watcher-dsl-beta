@@ -1,0 +1,18 @@
+// This watcher is responsible for querying the total supply of an ERC20 token.
+
+// Import the necessary contract interface
+import contract ERC20.Call.getTotalSupply from "path/to/change/";
+
+
+// Define Config type
+type Config = {
+  contractAddress: string;
+};
+
+
+// Endpoint to get the total supply
+request getTotalSupply(config: Config) {
+  const erc20 = ERC20.at(config.contractAddress);
+  const totalSupply = erc20.Call.getTotalSupply.get();
+  respond(totalSupply);
+}
