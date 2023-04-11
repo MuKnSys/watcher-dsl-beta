@@ -7,7 +7,8 @@ You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvy
 ## Instructions
 * As example use the watcher from `data/example` folder
 * The contracts path currently had to be absolute. 
-* To build all haskell project dependencies go into: `/Desktop/watcher-dsl-beta/src/haskell` and run `cabal build all` command
+* To build all node project dependencies go into: `/watcher-dsl-beta/src/node` and run `npm install` command
+* To build all haskell project dependencies go into: `/watcher-dsl-beta/src/haskell` and run `cabal build all` command
 * After this you can run command from `watcher-dsl-beta/src/haskell/dist-newstyle/build/x86_64-linux/ghc-9.2.4/haskell-0.1.0.0/x/haskell/build/haskell`
 * There are three paths that you have to provide as a parameters: 
     * Path to .watcher file. 
