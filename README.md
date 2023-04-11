@@ -6,7 +6,7 @@ You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvy
 
 ## Instructions
 * As example use the watcher from `data/example` folder
-* The contracts path currently had to be absolute. 
+* In the `example/ERC20TOT.watcher` put the directory of the contract into the import declaration f.e `/home/user/Desktop/watchers/watcher-ts/node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol`. Contracts path currently had to be absolute. 
 * To build all node project dependencies go into: `/watcher-dsl-beta/src/node` and run `npm install` command
 * To build all haskell project dependencies go into: `/watcher-dsl-beta/src/haskell` and run `cabal build all` command
 * After this you can run command from `watcher-dsl-beta/src/haskell/dist-newstyle/build/x86_64-linux/ghc-9.2.4/haskell-0.1.0.0/x/haskell/build/haskell`
