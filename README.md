@@ -26,7 +26,7 @@ You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvy
 ## Dependencies
 
 * [Node JS / npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
-* [Haskell](https://get-ghcup.haskell.org/)
+* [Haskell](https://get-ghcup.haskell.org/) - GHC version 9.2.4
 * [Cabal](https://www.haskell.org/cabal/)
 
 ## Previous Examples
