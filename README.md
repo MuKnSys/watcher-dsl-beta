@@ -26,8 +26,13 @@ You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvy
 ## Dependencies
 
 * [Node JS / npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
-* [Haskell](https://get-ghcup.haskell.org/) - GHC version 9.2.4
-* [Cabal](https://www.haskell.org/cabal/)
+* [Haskell](https://get-ghcup.haskell.org/)
+    * GHC 9.2.4
+    * [Cabal 3.6.2.0](https://www.haskell.org/cabal/)
+    * Stack 2.9.3 
+    * HLS 1.10.0.0 
+* Builded [watcher-ts](https://github.com/cerc-io/watcher-ts) library
+
 
 ## Previous Examples
 
