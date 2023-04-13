@@ -66,8 +66,9 @@ $ yarn && yarn build
 
 ## Compile an Example Watcher
 
+
 ```
-$ cd node-modules/@openzeppelin/contracts/token/ERC20
+$ cd /watcher-ts/node-modules/@openzeppelin/contracts/token/ERC20
 ```
 
 * As example use the watcher from `data/example` folder.
