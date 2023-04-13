@@ -4,7 +4,7 @@ Watcher DSL is a domain specific language (DSL) designed to provide a well-struc
 
 You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvyHVA-v0WEXEdTiFYO6q4) a more detailed specification of the DSL.
 
-## Instructions
+## How to use this repository
 
 ## Hardware Requirements 
 * OS: Ubuntu 22.10
@@ -13,7 +13,7 @@ You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvy
 * Storage: At least 20 GB of free disk space recommended.
 * OS: Windows, macOS or Linux.
 
-## Install Dependencies
+## Install dependencies
 
 * [Node JS / npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 * [Haskell](https://get-ghcup.haskell.org/)
