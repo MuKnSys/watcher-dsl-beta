@@ -5,6 +5,24 @@ Watcher DSL is a domain specific language (DSL) designed to provide a well-struc
 You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvyHVA-v0WEXEdTiFYO6q4) a more detailed specification of the DSL.
 
 ## Instructions
+
+## Hardware Requirements 
+* OS: Ubuntu 22.10
+* CPU: 64-bit, 2.5 GHz.
+* RAM: Minimum 4 GB of RAM, but 8 GB or more recommended
+* Storage: At least 20 GB of free disk space recommended.
+* OS: Windows, macOS or Linux.
+
+## Install Dependencies
+
+* [Node JS / npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+* [Haskell](https://get-ghcup.haskell.org/)
+    * GHC 9.2.4
+    * [Cabal 3.6.2.0](https://www.haskell.org/cabal/)
+    * Stack 2.9.3 
+    * HLS 1.10.0.0 
+
+
 * As example use the watcher from `data/example` folder.
 * In the `example/ERC20TOT.watcher` put the directory of the contract into the import declaration f.e `/home/user/Desktop/watchers/watcher-ts/node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol`. Contracts path currently had to be absolute. 
 * To build all node project dependencies go into: `/watcher-dsl-beta/src/node` and run `npm install` command.
@@ -16,22 +34,6 @@ You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvy
     * Path to node directory in watcher-dsl-beta project.
 * example `./haskell "compile" /home/user/Desktop/watcher-dsl-beta/data/example /home/user/Desktop/watchers/watcher-ts /home/user/Desktop/watcher-dsl-beta/src/node/`
 * watcher will appear in packages folder of watcher-ts library 
-## Hardware Requirements 
-* OS: Ubuntu 22.10
-* CPU: 64-bit, 2.5 GHz.
-* RAM: Minimum 4 GB of RAM, but 8 GB or more recommended
-* Storage: At least 20 GB of free disk space recommended.
-* OS: Windows, macOS or Linux.
-
-## Dependencies
-
-* [Node JS / npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
-* [Haskell](https://get-ghcup.haskell.org/)
-    * GHC 9.2.4
-    * [Cabal 3.6.2.0](https://www.haskell.org/cabal/)
-    * Stack 2.9.3 
-    * HLS 1.10.0.0 
-* Builded [watcher-ts](https://github.com/cerc-io/watcher-ts) library
 
 
 ## Previous Examples
