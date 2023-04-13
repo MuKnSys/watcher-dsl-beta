@@ -1,6 +1,6 @@
 # watcher-dsl-beta
 
-Watcher DSL is a domain specific language (DSL) designed to provide a well-structured, machine-readable, non-Turing complete environment for composing watchers and improving the developer experience.
+This repository contains a beta version of a Domain-Specific Language (DSL) compiler that is designed to generate watcher code.
 
 You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvyHVA-v0WEXEdTiFYO6q4) a more detailed specification of the DSL.
 
