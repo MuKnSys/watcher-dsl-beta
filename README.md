@@ -6,14 +6,14 @@ You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvy
 
 ## How to use this repository
 
-## Hardware Requirements 
+### Hardware Requirements 
 * OS: Ubuntu 22.10
 * CPU: 64-bit, 2.5 GHz.
 * RAM: Minimum 4 GB of RAM, but 8 GB or more recommended
 * Storage: At least 20 GB of free disk space recommended.
 * OS: Windows, macOS or Linux.
 
-## Install dependencies
+### Install dependencies
 
 * [Node JS / npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 * [Haskell](https://get-ghcup.haskell.org/)
@@ -22,6 +22,7 @@ You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvy
     * Stack 2.9.3 
     * HLS 1.10.0.0 
 
+###
 
 * As example use the watcher from `data/example` folder.
 * In the `example/ERC20TOT.watcher` put the directory of the contract into the import declaration f.e `/home/user/Desktop/watchers/watcher-ts/node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol`. Contracts path currently had to be absolute. 
