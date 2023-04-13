@@ -4,6 +4,9 @@ This repository contains a beta version of a Domain-Specific Language (DSL) comp
 
 You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvyHVA-v0WEXEdTiFYO6q4) a more detailed specification of the DSL.
 
+To ensure that the generated code is syntactically correct and meets all the rules for watchers, the DSL uses ESLint and TypeScript parser. ESLint is a widely used open-source tool for linting and identifying potential problems in JavaScript and TypeScript code, while TypeScript parser is a parser for the TypeScript language that can help with type-checking, code analysis, and generation of abstract syntax trees.
+It also uses the codegen feature from the watcher-ts library to generate the watcher code. The beta version of the compiler in this repository does not have implemented part responsible for adding hooks.
+
 ## Hardware Requirements 
 * OS: Ubuntu 22.10
 * CPU: 64-bit, 2.5 GHz.
