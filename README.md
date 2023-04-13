@@ -25,11 +25,11 @@ It also uses the codegen feature from the watcher-ts library to generate the wat
 
 ## Prerequisites
 
-### Build Node Dependencies
+Build Node Dependencies
 
-### Build Haskell Dependencies
+Build Haskell Dependencies
 
-### Build Watcher Dependencies
+Build Watcher Dependencies
 
 
 ## Compile an Example Watcher
