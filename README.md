@@ -66,6 +66,10 @@ $ yarn && yarn build
 
 ## Compile an Example Watcher
 
+```
+$ cd node-modules/@openzeppelin/contracts/token/ERC20
+```
+
 * As example use the watcher from `data/example` folder.
 * In the `example/ERC20TOT.watcher` put the directory of the contract into the import declaration f.e `/home/user/Desktop/watchers/watcher-ts/node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol`. Contracts path currently had to be absolute. 
 * To build all node project dependencies go into: `/watcher-dsl-beta/src/node` and run `npm install` command.
