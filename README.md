@@ -13,7 +13,7 @@ You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvy
 * Storage: At least 20 GB of free disk space recommended.
 * OS: Windows, macOS or Linux.
 
-### Install dependencies
+### Dependencies
 
 * [Node JS / npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 * [Haskell](https://get-ghcup.haskell.org/)
