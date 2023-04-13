@@ -4,16 +4,14 @@ Watcher DSL is a domain specific language (DSL) designed to provide a well-struc
 
 You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvyHVA-v0WEXEdTiFYO6q4) a more detailed specification of the DSL.
 
-## How to Use This Repository
-
-### Hardware Requirements 
+## Hardware Requirements 
 * OS: Ubuntu 22.10
 * CPU: 64-bit, 2.5 GHz.
 * RAM: Minimum 4 GB of RAM, but 8 GB or more recommended
 * Storage: At least 20 GB of free disk space recommended.
 * OS: Windows, macOS or Linux.
 
-### Dependencies
+## Dependencies
 
 * [Node JS / npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 * [Haskell](https://get-ghcup.haskell.org/)
@@ -22,10 +20,16 @@ You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvy
     * Stack 2.9.3 
     * HLS 1.10.0.0 
 
-### Prerequisites
+## Prerequisites
+
+### Build Node Dependencies
+
+### Build Haskell Dependencies
+
+### Build Watcher Dependencies
 
 
-### Compile an Example Watcher
+## Compile an Example Watcher
 
 * As example use the watcher from `data/example` folder.
 * In the `example/ERC20TOT.watcher` put the directory of the contract into the import declaration f.e `/home/user/Desktop/watchers/watcher-ts/node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol`. Contracts path currently had to be absolute. 
