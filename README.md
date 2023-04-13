@@ -53,6 +53,16 @@ $ cabal build all
 
 Build Watcher Dependencies
 
+```
+
+$ git clone https://github.com/cerc-io/watcher-ts.git 
+
+$ cd watcher-ts
+
+$ npm i -g corepack 
+
+$ yarn && yarn build
+```
 
 ## Compile an Example Watcher
 
