@@ -27,6 +27,12 @@ It also uses the codegen feature from the watcher-ts library to generate the wat
 
 Build Node Dependencies
 
+```
+$ cd watcher-dsl-beta/src/node
+
+$ npm install
+```
+
 Build Haskell Dependencies
 
 ```
