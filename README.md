@@ -69,6 +69,8 @@ $ yarn && yarn build
 
 ```
 $ cd ~/watcherDSL/watcher-ts/node_modules/@openzeppelin/contracts/token/ERC20
+
+cd ~/watcherDSL/watcher-dsl-beta/data/example
 ```
 
 * As example use the watcher from `data/example` folder.
