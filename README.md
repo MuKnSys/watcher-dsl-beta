@@ -78,6 +78,7 @@ Open the [ERC20TOT.watcher]() file in this directory with your text editor of ch
 $ emacs ERCTOT.watcher 
 ```
 
+Open the ERC20TOT.watcher file, and replace the default path value for the contract interface with `node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol`.
 
 * As example use the watcher from `data/example` folder.
 * In the `example/ERC20TOT.watcher` put the directory of the contract into the import declaration f.e `/home/user/Desktop/watchers/watcher-ts/node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol`. Contracts path currently had to be absolute. 
