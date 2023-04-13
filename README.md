@@ -29,6 +29,14 @@ Build Node Dependencies
 
 Build Haskell Dependencies
 
+```
+$ cd ..
+
+$ cd haskell
+
+$ cabal build all
+```
+
 Build Watcher Dependencies
 
 
