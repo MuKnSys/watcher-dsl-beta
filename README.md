@@ -31,7 +31,7 @@ The beta version of the compiler in this repository does not have implemented pa
 ## Prerequisites
 
 Clone the repository.
-``` $ git clone https://github.com/MuKnSys/watcher-dsl-beta ```
+``` $ git clone https://github.com/MuKnSys/watcher-dsl-beta.git ```
 
 Build Node Dependencies
 
