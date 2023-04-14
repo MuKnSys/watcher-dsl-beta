@@ -85,15 +85,15 @@ Open the [ERC20TOT.watcher](https://github.com/MuKnSys/watcher-dsl-beta/blob/mai
 $ emacs ERCTOT.watcher 
 ```
 
-Open the `ERC20TOT.watcher` file, and replace the default path value for the contract interface with `node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol`.  Then, save and close the file.
+Open the `ERC20TOT.watcher` file, and replace the default path value for the contract interface with `/home/user/Desktop/watchers/watcher-ts/node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol`.  Then, save and close the file.
 
 ```
 $ cd ~/watcherDSL/watcher-dsl-beta/src/haskell/dist-newstyle/build/x86_64-linux/ghc-9.2.7
 ```
 There are three paths that you have to provide as a parameters: 
-    * Path to .watcher file
-    * Path to watcher-ts library
-    * Path to node directory in watcher-dsl-beta project
+* Path to .watcher file
+* Path to watcher-ts library
+* Path to node directory in watcher-dsl-beta project
 ```
 $ ./haskell "compile" ~/watcherDSL/watcher-dsl-beta/data/example ~/watcherDSL/watchers/watcher-ts /home/user/Desktop/watcher-dsl-beta/src/node/
 ```
