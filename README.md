@@ -1,6 +1,6 @@
 # watcher-dsl-beta
 
-This repository contains a beta version of a Domain-Specific Language (DSL) compiler that is designed to generate watcher code.
+This repository contains a beta version of a Domain-Specific Language (DSL) compiler that is designed to generate [watcher](https://github.com/cerc-io/watcher-ts) code.
 
 You can find [here](https://docs.google.com/document/d/1gDyuC78L_BdqCin9_N_iAUvyHVA-v0WEXEdTiFYO6q4) a more detailed specification of the DSL.
 
@@ -72,7 +72,7 @@ $ npm i -g corepack
 $ yarn && yarn build
 ```
 
-## Compile an Example Watcher
+## Compile an [Example ERC20 Watcher](https://github.com/cerc-io/watcher-ts/tree/main/packages/erc20-watcher)
 
 ```
 $ cd ~/watcherDSL/watcher-ts/node_modules/@openzeppelin/contracts/token/ERC20
