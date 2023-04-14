@@ -62,6 +62,7 @@ $ cabal build all
 Build Watcher Dependencies
 
 ```
+$ cd ~/watcherDSL 
 
 $ git clone https://github.com/cerc-io/watcher-ts.git 
 
