@@ -94,6 +94,7 @@ $ ./haskell "compile" ~/watcherDSL/watcher-dsl-beta/data/example ~/watcherDSL/wa
 The watcher will appear in packages folder of watcher-ts library.
 
 
+## Previous Version of Instructions
 
 * As example use the watcher from `data/example` folder.
 * In the `example/ERC20TOT.watcher` put the directory of the contract into the import declaration f.e `/home/user/Desktop/watchers/watcher-ts/node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol`. Contracts path currently had to be absolute. 
